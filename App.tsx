@@ -25,7 +25,7 @@ export default function App() {
       <ThemeProvider theme={theme}>
         <View style={[styles.container, styles.bgSetup]}>
           <StatusBar style="auto" />
-          <Tab.Navigator initialRouteName="Home">
+          <Tab.Navigator initialRouteName="Home" /* screenOptions={{ headerShown: false }} */>
             <Tab.Screen
               name="Home"
               component={Dashboard}
