@@ -10,7 +10,7 @@ const styles = StyleSheet.create({
   value: { fontSize: 16, marginVertical: 5, fontWeight: "600" },
 });
 
-const ControlIndicator = ({ control, onPress }: { control: Control; onPress: (control: Control) => void }) => (
+export const ControlIndicator = ({ control, onPress }: { control: Control; onPress: (control: Control) => void }) => (
   <Pressable onPress={() => onPress(control)}>
     <VStack items="center">
       <ControlIcon type={control.type} extraStyles={styles.icon} />
@@ -19,5 +19,3 @@ const ControlIndicator = ({ control, onPress }: { control: Control; onPress: (co
     </VStack>
   </Pressable>
 );
-
-export default ControlIndicator;

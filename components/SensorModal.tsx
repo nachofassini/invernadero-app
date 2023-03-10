@@ -1,4 +1,4 @@
-import { HStack, Text, VStack, Dialog, DialogHeader, DialogContent } from "@react-native-material/core";
+import { HStack, Text, VStack, Dialog, DialogHeader, DialogContent, Button } from "@react-native-material/core";
 import { Sensor } from "../pages/Dashboard";
 import { SensorIcon } from "./SensorIcon";
 
@@ -50,6 +50,7 @@ export const SensorModal = ({ sensor, onDismiss }: SensorModalProps) => {
             ))}
           </VStack>
         </VStack>
+        <Button title="Ver mas" color="secondary" style={{ marginTop: 20 }} />
       </DialogContent>
     </Dialog>
   );

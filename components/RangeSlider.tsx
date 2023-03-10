@@ -8,26 +8,27 @@ import Notch from "./Notch";
 import Rail from "./Rail";
 import RailSelected from "./RailSelected";
 import Thumb from "./Thumb";
+import { Control, FieldValues, Path, PathValue, UnpackNestedValue, useController } from "react-hook-form";
 
-interface RangeSliderProps {
+interface RangeSliderProps<T extends FieldValues> {
+  control: Control<T>;
+  name: Path<T>;
+  defaultValue?: UnpackNestedValue<PathValue<T, Path<T>>>;
   min?: number;
   max?: number;
-  low?: number;
-  high?: number;
-  fieldName: string;
+  label: string;
   disableRange?: boolean;
 }
 
-const Stage = ({
+const Stage = <T extends FieldValues>({
+  control,
+  name,
   min = 0,
   max = 100,
-  low: initialLow,
-  high: initialHigh,
-  fieldName,
+  label,
   disableRange = false,
-}: RangeSliderProps) => {
-  const [low, setLow] = useState(initialLow ?? min);
-  const [high, setHigh] = useState(initialHigh ?? max);
+}: RangeSliderProps<T>) => {
+  const { field } = useController({ control, name });
 
   const renderThumb = useCallback(() => <Thumb />, []);
   const renderRail = useCallback(() => <Rail />, []);
@@ -35,19 +36,19 @@ const Stage = ({
   const renderLabel = useCallback((value: number) => <Label text={value.toString()} />, []);
   const renderNotch = useCallback(() => <Notch />, []);
   const handleValueChange = useCallback((low: number, high: number) => {
-    setLow(low);
-    setHigh(high);
+    if (!disableRange) field.onChange({ low, high });
+    if (disableRange) field.onChange(low);
   }, []);
 
   return (
     <View style={{ width: "90%", marginVertical: 10 }}>
-      <Text>{fieldName}</Text>
+      <Text>{label}</Text>
       <RnRangeSlider
         style={{ marginTop: 10 }}
         min={min}
         max={max}
-        low={low}
-        high={high}
+        low={disableRange ? field.value : field.value.low}
+        high={disableRange ? field.value : field.value.high}
         step={1}
         floatingLabel
         disableRange={disableRange}
@@ -62,13 +63,13 @@ const Stage = ({
         {disableRange ? (
           <>
             <Text>{min}</Text>
-            <Text>{low}</Text>
+            <Text>{field.value.low}</Text>
             <Text>{max}</Text>
           </>
         ) : (
           <>
-            <Text>{low}</Text>
-            <Text>{high}</Text>
+            <Text>{field.value.low}</Text>
+            <Text>{field.value.high}</Text>
           </>
         )}
       </HStack>

@@ -1,21 +1,11 @@
-import {
-  HStack,
-  Surface,
-  Text,
-  VStack,
-  Dialog,
-  DialogHeader,
-  DialogContent,
-  DialogActions,
-  Switch,
-} from "@react-native-material/core";
+import { HStack, Surface, Text, VStack } from "@react-native-material/core";
 import { StyleSheet, View, ScrollView } from "react-native";
 import Icon from "@expo/vector-icons/MaterialCommunityIcons";
 import { useMemo, useState } from "react";
 import { SensorModal } from "../components/SensorModal";
-import SensorIndicator from "../components/SensorIndicator";
-import ControlIndicator from "../components/ControlIndicator";
+import { SensorIndicator } from "../components/SensorIndicator";
 import { ControlModal } from "../components/ControlModal";
+import { ControlIndicator } from "../components/ControlIndicator";
 
 export type Component = "co2" | "luminosity" | "soil_humidity" | "temperature" | "humidity";
 export type ControlType = "fan" | "water" | "light" | "extractor";
@@ -137,17 +127,6 @@ const Dashboard = () => {
       </ScrollView>
       {selectedSensor && <SensorModal sensor={selectedSensor} onDismiss={() => setSelectedSensor(null)} />}
       {selectedControl && <ControlModal control={selectedControl} onDismiss={() => setSelectedControl(null)} />}
-
-      {/* <Dialog visible onDismiss={onDismiss}> 
-      <DialogHeader title="Contról de riego" />
-      <DialogContent>
-        <VStack items="center" spacing={20}>
-          <Text>¿Activar dispositivo de riego?</Text>
-          <Icon name="watering-can" style={{ fontSize: 60 }} />
-          <Switch value />
-        </VStack>
-      </DialogContent>
-    </Dialog> */}
     </>
   );
 };

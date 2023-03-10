@@ -2,7 +2,7 @@ import { Pressable, VStack, Text } from "@react-native-material/core";
 import { Sensor } from "../pages/Dashboard";
 import { SensorIcon } from "./SensorIcon";
 
-const SensorIndicator = ({
+export const SensorIndicator = ({
   onPress,
   order,
   styles,
@@ -26,5 +26,3 @@ const SensorIndicator = ({
     </VStack>
   </Pressable>
 );
-
-export default SensorIndicator;
