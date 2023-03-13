@@ -1,11 +1,17 @@
-import { HStack, Surface, Text, VStack } from "@react-native-material/core";
-import { StyleSheet, View, ScrollView } from "react-native";
+import { HStack, IconButton, Surface, Text, VStack } from "@react-native-material/core";
+import { StyleSheet, View, ScrollView, Pressable } from "react-native";
 import Icon from "@expo/vector-icons/MaterialCommunityIcons";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { PlanModal } from "../components/PlanModal";
 import { SensorModal } from "../components/SensorModal";
 import { SensorIndicator } from "../components/SensorIndicator";
 import { ControlModal } from "../components/ControlModal";
 import { ControlIndicator } from "../components/ControlIndicator";
+import { StageData, STAGES_INITIAL_VALUES } from "../components/StageForm";
+import { CropFormData } from "../components/CropFormModal";
+import { useNavigation } from "@react-navigation/native";
+import { BottomTabNavigationProp } from "@react-navigation/bottom-tabs";
+import { ChangePlanModal } from "../components/ChangePlanModal";
 
 export type Component = "co2" | "luminosity" | "soil_humidity" | "temperature" | "humidity";
 export type ControlType = "fan" | "water" | "light" | "extractor";
@@ -22,9 +28,52 @@ export interface Control {
   active: boolean;
 }
 
+export type Plan = {
+  crop: CropFormData & { stageCount: number };
+  stage: StageData & { day: number; order: number };
+};
+
+export const getPlanTitle = ({ crop, stage }: Plan): string =>
+  `${crop.name} | Etapa: ${stage.order}/${crop.stageCount} | Dia ${stage.day}/${stage.days}`;
+
+export type HomeNavProps = BottomTabNavigationProp<{}>;
+
 const Dashboard = () => {
+  const { setOptions } = useNavigation<HomeNavProps>();
+  const [showPlanModal, setShowPlanModal] = useState(false);
+  const [showChangePlanModal, setShowChangePlanModal] = useState(false);
   const [selectedSensor, setSelectedSensor] = useState<Sensor | null>(null);
   const [selectedControl, setSelectedControl] = useState<Control | null>(null);
+
+  const toggleShowPlanModal = () => setShowPlanModal((prevVal) => !prevVal);
+  const toggleShowChangePlanModal = () => setShowChangePlanModal((prevVal) => !prevVal);
+
+  const currentPlan: Plan = useMemo(
+    () => ({
+      crop: { name: "Frutilla", stageCount: 3 },
+      stage: { ...STAGES_INITIAL_VALUES, id: "1", name: "Germinación", day: 17, days: 30, order: 2 },
+    }),
+    []
+  );
+
+  useEffect(() => {
+    if (!!currentPlan && setOptions) {
+      setOptions({
+        headerTitle: () => (
+          <Pressable onPress={toggleShowPlanModal}>
+            <Text>{getPlanTitle(currentPlan)}</Text>
+          </Pressable>
+        ),
+        headerRight: () => (
+          <IconButton
+            icon={(props) => <Icon name="plus" {...props} />}
+            onPress={toggleShowChangePlanModal}
+            pressEffect="none"
+          />
+        ),
+      });
+    }
+  }, []);
 
   const externalSensors = useMemo<Sensor[]>(
     () => [
@@ -127,6 +176,8 @@ const Dashboard = () => {
       </ScrollView>
       {selectedSensor && <SensorModal sensor={selectedSensor} onDismiss={() => setSelectedSensor(null)} />}
       {selectedControl && <ControlModal control={selectedControl} onDismiss={() => setSelectedControl(null)} />}
+      {currentPlan && showPlanModal && <PlanModal plan={currentPlan} onDismiss={toggleShowPlanModal} />}
+      {showChangePlanModal && <ChangePlanModal onDismiss={toggleShowChangePlanModal} />}
     </>
   );
 };

@@ -12,6 +12,7 @@ type Stage = {
   name: string;
   active: boolean;
   days: number;
+  day?: number;
 };
 
 const Stages = () => {
@@ -25,7 +26,7 @@ const Stages = () => {
   }, [setOptions, cropName]);
 
   const stages: Stage[] = [
-    { id: "1", order: 1, name: "Germinación", active: true, days: 30 },
+    { id: "1", order: 1, name: "Germinación", active: true, days: 30, day: 17 },
     { id: "2", order: 2, name: "Crecimiento", active: false, days: 60 },
     { id: "3", order: 3, name: "Maduración", active: false, days: 45 },
   ];
@@ -39,7 +40,7 @@ const Stages = () => {
           title={stage.name}
           onPress={() => navigate("EditStage", { stageId: stage.id, stageName: stage.name })}
           trailing={(props) => <Icon name="chevron-right" {...props} />}
-          meta={`${stage.active ? "Activa - " : ""}${stage.days} días`}
+          meta={stage.active ? `Activa - Día ${stage.day}/${stage.days}` : `${stage.days} días`}
         />
       ))}
     </Box>

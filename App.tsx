@@ -2,18 +2,19 @@ import { StatusBar } from "expo-status-bar";
 import { NavigationContainer } from "@react-navigation/native";
 import { SafeAreaView, StyleSheet, View } from "react-native";
 import { Provider as ThemeProvider } from "@react-native-material/core";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { BottomTabNavigationProp, createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Icon from "@expo/vector-icons/MaterialCommunityIcons";
 
 import { colors, theme } from "./constants";
-import Dashboard from "./pages/Dashboard";
-import Crops from "./pages/Crops";
+import Dashboard, { HomeNavProps } from "./pages/Dashboard";
+import Crops, { CropsNavigation } from "./pages/Crops";
 import Reports from "./pages/Reports";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
 export type RootTabParamList = {
-  Home: undefined;
-  Crops: undefined;
-  Reports: undefined;
+  Home: HomeNavProps;
+  Crops: NativeStackNavigationProp<CropsNavigation>;
+  Reports: BottomTabNavigationProp<{}>;
 };
 
 const Tab = createBottomTabNavigator<RootTabParamList>();
@@ -25,11 +26,11 @@ export default function App() {
       <ThemeProvider theme={theme}>
         <SafeAreaView style={[styles.container, styles.bgSetup]}>
           <StatusBar style="auto" />
-          <Tab.Navigator initialRouteName="Home" screenOptions={{ headerShown: false }}>
+          <Tab.Navigator initialRouteName="Home">
             <Tab.Screen
               name="Home"
               component={Dashboard}
-              options={{ tabBarIcon: (props) => <Icon name="home" {...props} /> }}
+              options={{ tabBarIcon: (props) => <Icon name="home" {...props} />, title: "" }}
             />
             <Tab.Screen
               name="Crops"

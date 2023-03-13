@@ -83,7 +83,6 @@ export const ControlModal = ({ control, onDismiss }: ControlModalProps) => {
             <View>
               <HStack justify="between" items="center">
                 <Text>Activar:</Text>
-                {/* @ts-ignore */}
                 <DropDownPicker
                   open={open}
                   setOpen={setOpen}

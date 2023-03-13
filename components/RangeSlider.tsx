@@ -41,7 +41,7 @@ const Stage = <T extends FieldValues>({
   }, []);
 
   return (
-    <View style={{ width: "90%", marginVertical: 10 }}>
+    <View style={{ width: "100%", marginVertical: 10 }}>
       <Text>{label}</Text>
       <RnRangeSlider
         style={{ marginTop: 10 }}

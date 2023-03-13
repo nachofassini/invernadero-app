@@ -4,8 +4,9 @@ import { createNativeStackNavigator, NativeStackScreenProps } from "@react-navig
 import Stages from "./Stages";
 import Stage from "./Stage";
 import { Text } from "react-native";
-import { useNavigation } from "@react-navigation/native";
-import { useEffect } from "react";
+import { getFocusedRouteNameFromRoute, useIsFocused, useNavigation, useRoute } from "@react-navigation/native";
+import { useEffect, useLayoutEffect, useState } from "react";
+import { CropFormData, CropFormModal } from "../components/CropFormModal";
 
 export type CropsNavigation = {
   Home: {};
@@ -14,15 +15,38 @@ export type CropsNavigation = {
   EditStage: { stageId: string; stageName: string };
 };
 
-type Props = NativeStackScreenProps<CropsNavigation>;
-
+type CropsScreenProps = NativeStackScreenProps<CropsNavigation, "Home">;
 export type StagesScreenProps = NativeStackScreenProps<CropsNavigation, "Stages">;
 export type NewStageScreenProps = NativeStackScreenProps<CropsNavigation, "NewStage">;
 export type EditStageScreenProps = NativeStackScreenProps<CropsNavigation, "EditStage">;
 
 const Stack = createNativeStackNavigator<CropsNavigation>();
 
-const CropList = ({ navigation: { navigate } }: Props) => {
+const CropList = () => {
+  const { navigate, getParent } = useNavigation<CropsScreenProps["navigation"]>();
+  const isFocused = useIsFocused();
+
+  const [showCropForm, setShowCropForm] = useState<CropFormData | null>();
+
+  const handleCloseCropForm = () => setShowCropForm(null);
+
+  // set tab nav header
+  useLayoutEffect(() => {
+    if (isFocused) {
+      getParent()?.setOptions({
+        headerRight: () => (
+          <IconButton
+            icon={(props) => <Icon name="plus" {...props} />}
+            onPress={() => setShowCropForm({ name: "" })}
+            pressEffect="none"
+          />
+        ),
+      });
+    } else {
+      getParent()?.setOptions({ headerRight: () => null });
+    }
+  }, [isFocused]);
+
   const crops = [
     { id: "frutilla", name: "Frutilla", active: true },
     { id: "lechuga", name: "Lechuga", active: false },
@@ -31,18 +55,30 @@ const CropList = ({ navigation: { navigate } }: Props) => {
     { id: "cebolla", name: "Cebolla", active: false },
   ];
 
+  const onCropFormSubmit = ({ name }: CropFormData) => {
+    // submit create/update crop call
+    handleCloseCropForm();
+    // refresh crop list
+  };
+
   return (
-    <Box>
-      {crops.map((crop) => (
-        <ListItem
-          key={crop.id}
-          title={crop.name}
-          onPress={() => navigate("Stages", { id: crop.id, name: crop.name })}
-          trailing={(props) => <Icon name="chevron-right" {...props} />}
-          meta={crop.active ? "ACTIVO" : ""}
-        />
-      ))}
-    </Box>
+    <>
+      <Box>
+        {crops.map((crop) => (
+          <ListItem
+            key={crop.id}
+            title={crop.name}
+            onPress={() => navigate("Stages", { id: crop.id, name: crop.name })}
+            onLongPress={() => setShowCropForm(crop)}
+            trailing={(props) => <Icon name="chevron-right" {...props} />}
+            meta={crop.active ? "ACTIVO" : ""}
+          />
+        ))}
+      </Box>
+      {!!showCropForm && (
+        <CropFormModal defaultValues={showCropForm} onSubmit={onCropFormSubmit} onDismiss={handleCloseCropForm} />
+      )}
+    </>
   );
 };
 
