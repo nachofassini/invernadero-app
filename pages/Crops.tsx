@@ -1,24 +1,15 @@
-import { Box, IconButton, Button, ListItem } from "@react-native-material/core";
+import { Button, IconButton, ListItem } from "@react-native-material/core";
 import Icon from "@expo/vector-icons/MaterialCommunityIcons";
-import { createNativeStackNavigator, NativeStackScreenProps } from "@react-navigation/native-stack";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Stages from "./Stages";
 import Stage from "./Stage";
-import { Text } from "react-native";
-import { getFocusedRouteNameFromRoute, useIsFocused, useNavigation, useRoute } from "@react-navigation/native";
-import { useEffect, useLayoutEffect, useState } from "react";
-import { CropFormData, CropFormModal } from "../components/CropFormModal";
-
-export type CropsNavigation = {
-  Home: {};
-  Stages: { id: string; name: string };
-  NewStage: { cropId: string };
-  EditStage: { stageId: string; stageName: string };
-};
-
-type CropsScreenProps = NativeStackScreenProps<CropsNavigation, "Home">;
-export type StagesScreenProps = NativeStackScreenProps<CropsNavigation, "Stages">;
-export type NewStageScreenProps = NativeStackScreenProps<CropsNavigation, "NewStage">;
-export type EditStageScreenProps = NativeStackScreenProps<CropsNavigation, "EditStage">;
+import { useIsFocused, useNavigation } from "@react-navigation/native";
+import { useLayoutEffect, useState } from "react";
+import { CropFormModal } from "../components/CropFormModal";
+import { CropInput, useGetCropsQuery } from "../gql";
+import { CropsNavigation, CropsScreenProps, EditStageScreenProps, StagesScreenProps } from "../types/navigation";
+import { RefreshControl, ScrollView } from "react-native";
+import { Snackbar } from "../components/Snackbar";
 
 const Stack = createNativeStackNavigator<CropsNavigation>();
 
@@ -26,8 +17,9 @@ const CropList = () => {
   const { navigate, getParent } = useNavigation<CropsScreenProps["navigation"]>();
   const isFocused = useIsFocused();
 
-  const [showCropForm, setShowCropForm] = useState<CropFormData | null>();
+  const { data: { crops } = {}, loading, error, refetch, networkStatus } = useGetCropsQuery();
 
+  const [showCropForm, setShowCropForm] = useState<CropInput | null>();
   const handleCloseCropForm = () => setShowCropForm(null);
 
   // set tab nav header
@@ -47,37 +39,36 @@ const CropList = () => {
     }
   }, [isFocused]);
 
-  const crops = [
-    { id: "frutilla", name: "Frutilla", active: true },
-    { id: "lechuga", name: "Lechuga", active: false },
-    { id: "espinaca", name: "Espinaca", active: false },
-    { id: "rucula", name: "Rúcula", active: false },
-    { id: "cebolla", name: "Cebolla", active: false },
-  ];
-
-  const onCropFormSubmit = ({ name }: CropFormData) => {
-    // submit create/update crop call
-    handleCloseCropForm();
-    // refresh crop list
-  };
-
   return (
     <>
-      <Box>
-        {crops.map((crop) => (
-          <ListItem
-            key={crop.id}
-            title={crop.name}
-            onPress={() => navigate("Stages", { id: crop.id, name: crop.name })}
-            onLongPress={() => setShowCropForm(crop)}
-            trailing={(props) => <Icon name="chevron-right" {...props} />}
-            meta={crop.active ? "ACTIVO" : ""}
+      <ScrollView refreshControl={<RefreshControl refreshing={loading} onRefresh={refetch} />}>
+        {error && !loading && <Snackbar type="error" message="Upss. Ocurrió un error cargando los cultivos." />}
+        {crops?.length === 0 ? (
+          <Snackbar
+            message="No se registró ningun cultivo todavia."
+            action={
+              <Button
+                title="¡Agregá un cultivo!"
+                color="secondary"
+                onPress={() => setShowCropForm({ name: "" })}
+                compact
+              />
+            }
           />
-        ))}
-      </Box>
-      {!!showCropForm && (
-        <CropFormModal defaultValues={showCropForm} onSubmit={onCropFormSubmit} onDismiss={handleCloseCropForm} />
-      )}
+        ) : (
+          crops?.map((crop) => (
+            <ListItem
+              key={crop.id}
+              title={crop.name}
+              onPress={() => navigate("Stages", { id: crop.id, name: crop.name })}
+              onLongPress={() => setShowCropForm({ id: crop.id, name: crop.name })}
+              trailing={(props) => <Icon name="chevron-right" {...props} />}
+              meta={crop?.active ? "ACTIVO" : ""}
+            />
+          ))
+        )}
+      </ScrollView>
+      {!!showCropForm && <CropFormModal defaultValues={showCropForm} onDismiss={handleCloseCropForm} />}
     </>
   );
 };

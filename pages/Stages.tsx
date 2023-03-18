@@ -1,19 +1,11 @@
-import { Box, Button, ListItem } from "@react-native-material/core";
+import { Button, ListItem } from "@react-native-material/core";
 import Icon from "@expo/vector-icons/MaterialCommunityIcons";
-import { createNativeStackNavigator, NativeStackScreenProps } from "@react-navigation/native-stack";
-import Stage from "./Stage";
-import { useEffect, useLayoutEffect } from "react";
-import { NavigatorScreenParams, useNavigation, useRoute } from "@react-navigation/native";
-import { CropsNavigation, StagesScreenProps } from "./Crops";
-
-type Stage = {
-  id: string;
-  order: number;
-  name: string;
-  active: boolean;
-  days: number;
-  day?: number;
-};
+import { useLayoutEffect } from "react";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import { StagesScreenProps } from "../types/navigation";
+import { RefreshControl, ScrollView } from "react-native";
+import { useGetStagesQuery } from "../gql";
+import { Snackbar } from "../components/Snackbar";
 
 const Stages = () => {
   const { setOptions, navigate } = useNavigation<StagesScreenProps["navigation"]>();
@@ -25,25 +17,36 @@ const Stages = () => {
     if (cropName && setOptions) setOptions({ headerBackTitle: cropName });
   }, [setOptions, cropName]);
 
-  const stages: Stage[] = [
-    { id: "1", order: 1, name: "Germinación", active: true, days: 30, day: 17 },
-    { id: "2", order: 2, name: "Crecimiento", active: false, days: 60 },
-    { id: "3", order: 3, name: "Maduración", active: false, days: 45 },
-  ];
+  const { data: { stages } = {}, error, loading, refetch } = useGetStagesQuery({ variables: { cropId } });
 
   return (
-    <Box>
-      {stages.map((stage) => (
-        <ListItem
-          key={stage.id}
-          overline={`Etapa: ${stage.order}`}
-          title={stage.name}
-          onPress={() => navigate("EditStage", { stageId: stage.id, stageName: stage.name })}
-          trailing={(props) => <Icon name="chevron-right" {...props} />}
-          meta={stage.active ? `Activa - Día ${stage.day}/${stage.days}` : `${stage.days} días`}
+    <ScrollView refreshControl={<RefreshControl refreshing={loading} onRefresh={refetch} />}>
+      {error && !loading && <Snackbar type="error" message="Upss. Ocurrió un error cargando las." />}
+      {stages?.length === 0 ? (
+        <Snackbar
+          message="Este cultivo no tiene ninguna etapa todavía."
+          action={
+            <Button
+              title="¡Agregá una etapa!"
+              color="secondary"
+              onPress={() => navigate("NewStage", { cropId })}
+              compact
+            />
+          }
         />
-      ))}
-    </Box>
+      ) : (
+        stages?.map((stage) => (
+          <ListItem
+            key={stage.id}
+            overline={`Etapa: ${stage.order}`}
+            title={stage.name}
+            onPress={() => navigate("EditStage", { cropId, stageId: stage.id, stageName: stage.name })}
+            trailing={(props) => <Icon name="chevron-right" {...props} />}
+            meta={stage.active ? `Activa - Día ${stage.day}/${stage.days}` : `${stage.days} días`}
+          />
+        ))
+      )}
+    </ScrollView>
   );
 };
 

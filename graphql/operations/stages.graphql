@@ -1,0 +1,79 @@
+query GetStage($id: ID!) {
+  stage(id: $id) {
+    id
+    cropId
+    crop {
+      id
+      name
+      active
+    }
+    name
+    active
+    day
+    order
+    days
+    minTemperature
+    maxTemperature
+    minHumidity
+    maxHumidity
+    minCo2
+    maxCo2
+    lightHours
+    irrigation
+    createdAt
+    updatedAt
+  }
+}
+
+query GetStages($cropId: ID!) {
+  stages(cropId: $cropId) {
+    id
+    cropId
+    name
+    active
+    day
+    order
+    days
+    minTemperature
+    maxTemperature
+    minHumidity
+    maxHumidity
+    minCo2
+    maxCo2
+    lightHours
+    irrigation
+    createdAt
+    updatedAt
+  }
+}
+
+mutation CreateOrUpdateStage($data: StageInput!) {
+  upsertStage(data: $data) {
+    id
+    cropId
+    name
+    active
+    day
+    order
+    days
+    minTemperature
+    maxTemperature
+    minHumidity
+    maxHumidity
+    minCo2
+    maxCo2
+    lightHours
+    irrigation
+    createdAt
+    updatedAt
+  }
+}
+
+mutation DeleteStage($id: ID!) {
+  deleteStage(id: $id) {
+    id
+    name
+    cropId
+    active
+  }
+}

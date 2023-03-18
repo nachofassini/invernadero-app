@@ -1,9 +1,11 @@
 import { useForm } from "react-hook-form";
 import RangeSlider from "../components/RangeSlider";
-import { Box, Button, TextInput } from "@react-native-material/core";
+import { Box, Button } from "@react-native-material/core";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { Input } from "./Input";
+import { GetStageQuery, Stage, StageInput } from "../gql";
+import { useEffect } from "react";
 
 type Range = { low: number; high: number };
 
@@ -14,8 +16,8 @@ export type StageData = {
   temperature: Range;
   humidity: Range;
   co2: Range;
-  light: number;
-  water: number;
+  lightHours: number;
+  irrigation: number;
 };
 
 export const STAGES_INITIAL_VALUES: StageData = {
@@ -25,8 +27,8 @@ export const STAGES_INITIAL_VALUES: StageData = {
   temperature: { low: 20, high: 25 },
   humidity: { low: 50, high: 75 },
   co2: { low: 700, high: 900 },
-  light: 12,
-  water: 10,
+  lightHours: 12,
+  irrigation: 10,
 };
 
 const validationSchema = yup
@@ -39,33 +41,87 @@ const validationSchema = yup
     temperature: yup.object({ low: yup.number().required(), high: yup.number().required() }),
     humidity: yup.object({ low: yup.number().required(), high: yup.number().required() }),
     co2: yup.object({ low: yup.number().required(), high: yup.number().required() }),
-    light: yup.number().required(),
-    water: yup.number().required(),
+    lightHours: yup.number().required(),
+    irrigation: yup.number().required(),
   })
   .required();
 
 interface SageFormProps {
-  onSubmit: (data: StageData) => void;
-  defaultValues?: StageData;
+  stage?: GetStageQuery["stage"];
+  loading: boolean;
+  onSubmit: (data: Omit<StageInput, "cropId">) => void;
 }
 
-export const StageForm = ({ defaultValues, onSubmit }: SageFormProps) => {
-  const { control, handleSubmit } = useForm<StageData>({
-    defaultValues: defaultValues || STAGES_INITIAL_VALUES,
+export const StageForm = ({ stage, loading, onSubmit }: SageFormProps) => {
+  const { control, handleSubmit, reset, formState } = useForm<StageData>({
+    defaultValues: STAGES_INITIAL_VALUES,
     resolver: yupResolver(validationSchema),
   });
+
+  useEffect(() => {
+    if (stage) {
+      reset({
+        id: stage.id,
+        name: stage.name,
+        days: stage.days,
+        temperature: { low: stage.minTemperature, high: stage.maxTemperature },
+        humidity: { low: stage.minHumidity, high: stage.maxHumidity },
+        co2: { low: stage.minCo2, high: stage.maxCo2 },
+        lightHours: stage.lightHours,
+        irrigation: stage.irrigation,
+      });
+    }
+  }, [stage]);
+
+  const submitHandler = ({
+    id,
+    name,
+    days,
+    temperature: { low: minTemperature, high: maxTemperature },
+    humidity: { low: minHumidity, high: maxHumidity },
+    co2: { low: minCo2, high: maxCo2 },
+    lightHours,
+    irrigation,
+  }: StageData) =>
+    onSubmit({
+      id,
+      name,
+      days,
+      minTemperature,
+      maxTemperature,
+      minHumidity,
+      maxHumidity,
+      minCo2,
+      maxCo2,
+      lightHours,
+      irrigation,
+    });
 
   return (
     <Box style={{ width: "100%" }}>
       <Input control={control} name="name" label="Nombre" placeholder="Nombre" />
-      <Input control={control} name="days" label="Días" placeholder="Días" />
-      <RangeSlider control={control} name="temperature" label="Temperatura (ºC)" min={15} max={40} />
+      <Input
+        control={control}
+        name="days"
+        label="Días"
+        placeholder="Días"
+        keyboardType="number-pad"
+        returnKeyType="done"
+        type="number"
+      />
+      <RangeSlider control={control} name="temperature" label="Temperatura (ºC)" min={0} max={50} />
       <RangeSlider control={control} name="humidity" label="Humedad relativa (%)" min={0} max={100} />
       <RangeSlider control={control} name="co2" label="Concentracion CO2 (ppm)" min={400} max={1200} />
-      <RangeSlider control={control} name="light" label="Luz diaria (Min. Hs.)" min={6} max={18} disableRange />
-      <RangeSlider control={control} name="water" label="Riego diario (mm3)" min={1} max={50} disableRange />
+      <RangeSlider control={control} name="lightHours" label="Luz diaria (Min. Hs.)" min={0} max={24} disableRange />
+      <RangeSlider control={control} name="irrigation" label="Riego diario (mm3)" min={0} max={2000} disableRange />
 
-      <Button title={defaultValues?.id ? "Guardar" : "Crear"} onPress={handleSubmit(onSubmit)} color="secondary" />
+      <Button
+        title={stage?.id ? "Guardar" : "Crear"}
+        onPress={handleSubmit(submitHandler)}
+        color="secondary"
+        loading={loading}
+        disabled={loading}
+      />
     </Box>
   );
 };

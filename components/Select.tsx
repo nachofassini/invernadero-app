@@ -23,14 +23,14 @@ export const Select = <T extends FieldValues, F extends any>({
     <Controller
       control={control}
       name={name}
-      render={({ field }) => (
+      render={({ field: { ref, ...props } }) => (
         <DropDownPicker
           open={open}
           setOpen={setOpen}
           items={items}
-          setValue={field.onChange}
-          onChangeValue={field.onChange}
-          {...field}
+          setValue={props.onChange}
+          onChangeValue={props.onChange}
+          {...props}
           placeholder={placeholder}
           {...rest}
         />

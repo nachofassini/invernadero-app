@@ -1,32 +1,27 @@
 import {
   HStack,
-  Text,
-  VStack,
   Dialog,
   DialogHeader,
   DialogContent,
   Button,
   DialogActions,
+  VStack,
 } from "@react-native-material/core";
 import { Input } from "./Input";
 import { useForm } from "react-hook-form";
 
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-
-export type CropFormData = {
-  id?: string;
-  name: string;
-};
+import { CropInput, useCreateOrUpdateCropMutation, useDeleteCropMutation } from "../gql";
 
 interface CropFormModalProps {
-  defaultValues: CropFormData;
+  defaultValues: CropInput;
   onDismiss: () => void;
-  onSubmit: (data: CropFormData) => void;
 }
 
 const validationSchema = yup
   .object({
+    id: yup.string(),
     name: yup
       .string()
       .required("Debe elegir un nombre para el cultivo")
@@ -35,24 +30,47 @@ const validationSchema = yup
   })
   .required();
 
-export const CropFormModal = ({ defaultValues, onDismiss, onSubmit }: CropFormModalProps) => {
-  const { control, handleSubmit } = useForm<CropFormData>({
-    defaultValues,
-    resolver: yupResolver(validationSchema),
+export const CropFormModal = ({ defaultValues, onDismiss }: CropFormModalProps) => {
+  const { control, handleSubmit } = useForm<CropInput>({ defaultValues, resolver: yupResolver(validationSchema) });
+
+  const [creteOrUpdate, { loading }] = useCreateOrUpdateCropMutation({
+    onCompleted: onDismiss,
+    refetchQueries: ["GetCrops"],
   });
+  const [deleteFn, { loading: deleting }] = useDeleteCropMutation({
+    onCompleted: onDismiss,
+    refetchQueries: ["GetCrops"],
+  });
+
+  const handleDelete = () => {
+    if (defaultValues.id) deleteFn({ variables: { id: defaultValues.id } });
+  };
+
+  const isFetching = loading || deleting;
 
   return (
     // @ts-ignore
     <Dialog visible onDismiss={onDismiss}>
-      <DialogHeader title="Agregar cultivo" />
+      <DialogHeader title={`${defaultValues?.id ? "Editar" : "Agregar"} cultivo`} />
       <DialogContent>
         <Input control={control} name="name" label="Nombre" placeholder="Nombre" />
       </DialogContent>
       <DialogActions>
-        <HStack spacing={20}>
-          <Button title="Crear" color="secondary" onPress={handleSubmit(onSubmit)} />
-          <Button title="Cancelar" color="primary" onPress={onDismiss} />
-        </HStack>
+        <VStack spacing={10}>
+          <HStack spacing={20}>
+            <Button
+              title={defaultValues?.id ? "Guardar" : "Agregar"}
+              color="secondary"
+              onPress={handleSubmit((data) => creteOrUpdate({ variables: { data } }))}
+              loading={loading}
+              disabled={isFetching}
+            />
+            <Button title="Cancelar" color="primary" onPress={onDismiss} />
+          </HStack>
+          {defaultValues?.id && (
+            <Button title="Eliminar" color="error" onPress={handleDelete} loading={deleting} disabled={isFetching} />
+          )}
+        </VStack>
       </DialogActions>
     </Dialog>
   );

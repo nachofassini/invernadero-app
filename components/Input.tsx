@@ -5,19 +5,29 @@ interface InputProps<T extends FieldValues> extends TextInputProps {
   control: Control<T>;
   name: Path<T>;
   defaultValue?: UnpackNestedValue<PathValue<T, Path<T>>>;
+  type?: "text" | "number";
 }
 
-export const Input = <T extends FieldValues>({ control, name, label, placeholder }: InputProps<T>) => {
+export const Input = <T extends FieldValues>({
+  control,
+  name,
+  label,
+  placeholder,
+  type = "text",
+  ...rest
+}: InputProps<T>) => {
   const { field, fieldState } = useController({ control, name });
   return (
     <TextInput
       label={label}
       placeholder={placeholder}
       {...field}
+      value={field.value.toString()}
       onChange={() => {}}
-      onChangeText={field.onChange}
+      onChangeText={(value) => field.onChange(type === "number" ? Number(value) : value)}
       helperText={fieldState.error?.message}
       style={{ marginRight: 12 }}
+      {...rest}
     />
   );
 };

@@ -2,15 +2,13 @@ import type { CodegenConfig } from "@graphql-codegen/cli";
 
 const config: CodegenConfig = {
   overwrite: true,
-  // schema: "http://localhost:4000/graphql",
-  schema: "src/graphql/schema.graphql",
-  documents: "src/graphql/operations/*.tsx",
-  hooks: {
-    afterOneFileWrite: ["prettier --write"],
-  },
+  schema: "http://localhost:8000/graphql",
+  documents: "graphql/operations/*.graphql",
+  ignoreNoDocuments: true,
+  hooks: { afterOneFileWrite: ["prettier --write"] },
   generates: {
-    "src/gql": {
-      preset: "client",
+    "gql/index.ts": {
+      // preset: "client",
       plugins: ["typescript", "typescript-operations", "typescript-react-apollo"],
     },
   },

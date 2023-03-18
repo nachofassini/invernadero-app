@@ -10,6 +10,7 @@
     "graphql-generate": "graphql-codegen --config codegen.ts"
   },
   "dependencies": {
+    "@apollo/client": "^3.7.10",
     "@hookform/resolvers": "^2.9.11",
     "@react-native-material/core": "^1.3.7",
     "@react-navigation/bottom-tabs": "^6.5.7",
@@ -33,13 +34,15 @@
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
-    "@graphql-codegen/cli": "3.2.2",
-    "@graphql-codegen/client-preset": "2.1.1",
+    "@graphql-codegen/cli": "^3.2.2",
+    "@graphql-codegen/client-preset": "^2.1.1",
     "@graphql-codegen/typescript": "^3.0.2",
     "@graphql-codegen/typescript-operations": "^3.0.2",
     "@graphql-codegen/typescript-react-apollo": "^3.3.7",
     "@types/react": "~18.0.14",
     "@types/react-native": "~0.69.1",
+    "prettier": "^2.8.4",
+    "ts-node": "^10.9.1",
     "typescript": "~4.3.5"
   },
   "prettier": {

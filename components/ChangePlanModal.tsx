@@ -2,6 +2,8 @@ import { HStack, VStack, Dialog, DialogHeader, DialogContent, Button } from "@re
 import { useForm } from "react-hook-form";
 import { useMemo } from "react";
 import { Select } from "./Select";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
 
 interface ChangePlanModalProps {
   onDismiss: () => void;
@@ -11,6 +13,13 @@ type ActivatePlanFormData = {
   cropId: string;
   stageId: string | null;
 };
+
+const validationSchema = yup
+  .object({
+    cropId: yup.string().required("Debe seleccionar un cultivo"),
+    stageId: yup.string().nullable(),
+  })
+  .required();
 
 export const ChangePlanModal = ({ onDismiss }: ChangePlanModalProps) => {
   const crops = useMemo(
@@ -37,12 +46,13 @@ export const ChangePlanModal = ({ onDismiss }: ChangePlanModalProps) => {
 
   const { control, handleSubmit, watch } = useForm<ActivatePlanFormData>({
     defaultValues: { cropId: "", stageId: null },
+    resolver: yupResolver(validationSchema),
   });
 
   const hasSelectedPlan = watch("cropId");
 
-  const onSubmit = (data: ActivatePlanFormData) => {
-    console.log("data", data);
+  const onSubmit = ({ cropId, stageId }: ActivatePlanFormData) => {
+    // activate cropId, stageId
   };
 
   return (
@@ -55,7 +65,6 @@ export const ChangePlanModal = ({ onDismiss }: ChangePlanModalProps) => {
           {hasSelectedPlan && (
             <Select control={control} name="stageId" items={stages} placeholder="Seleccione una etapa" />
           )}
-
           <HStack justify="between" style={{ paddingTop: 20 }}>
             <Button onPress={handleSubmit(onSubmit)} title="Activar plan" color="secondary" />
             <Button onPress={onDismiss} title="Cerrar" />

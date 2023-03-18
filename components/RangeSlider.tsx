@@ -63,7 +63,7 @@ const Stage = <T extends FieldValues>({
         {disableRange ? (
           <>
             <Text>{min}</Text>
-            <Text>{field.value.low}</Text>
+            <Text>{field.value}</Text>
             <Text>{max}</Text>
           </>
         ) : (

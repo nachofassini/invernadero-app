@@ -1,0 +1,42 @@
+query GetActivePlan {
+  activePlan {
+    crop {
+      id
+      name
+      active
+      stageCount
+    }
+    stage {
+      id
+      name
+      day
+      days
+      order
+    }
+  }
+}
+
+query GetCrops {
+  crops {
+    id
+    name
+    active
+    stageCount
+  }
+}
+
+mutation CreateOrUpdateCrop($data: CropInput!) {
+  upsertCrop(data: $data) {
+    id
+    name
+    active
+  }
+}
+
+mutation DeleteCrop($id: ID!) {
+  deleteCrop(id: $id) {
+    id
+    name
+    active
+  }
+}
