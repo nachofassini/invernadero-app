@@ -1,4 +1,4 @@
-import { HStack, IconButton, Surface, Text, VStack } from "@react-native-material/core";
+import { ActivityIndicator, HStack, IconButton, Surface, Text, VStack } from "@react-native-material/core";
 import { StyleSheet, View, ScrollView, Pressable } from "react-native";
 import Icon from "@expo/vector-icons/MaterialCommunityIcons";
 import { useEffect, useMemo, useState } from "react";
@@ -7,31 +7,39 @@ import { SensorModal } from "../components/SensorModal";
 import { SensorIndicator } from "../components/SensorIndicator";
 import { ControlModal } from "../components/ControlModal";
 import { ControlIndicator } from "../components/ControlIndicator";
-import { STAGES_INITIAL_VALUES } from "../components/StageForm";
 import { useNavigation } from "@react-navigation/native";
 import { ChangePlanModal } from "../components/ChangePlanModal";
-import { ActivePlan, useGetActivePlanQuery } from "../gql";
+import {
+  Device,
+  Measures,
+  SensorType,
+  useGetActiveCropQuery,
+  useGetEnabledDevicesQuery,
+  useGetLastMeasureQuery,
+} from "../gql";
 import { HomeNavProps } from "../types/navigation";
+import { Spinner } from "../components/Spinner";
 
-export type Component = "co2" | "luminosity" | "soil_humidity" | "temperature" | "humidity";
-export type ControlType = "fan" | "water" | "light" | "extractor";
+export type MeasureUnit = "%" | "ºC" | "ppm" | "mm3" | "Hs";
 
 export interface Sensor {
-  component: Component;
-  name: string;
-  value: string;
+  dataKey: Measures;
+  external?: boolean;
+  type: SensorType;
 }
 
 export interface Control {
-  type: ControlType;
-  name: string;
+  type: Device;
   active: boolean;
 }
 
-export const getPlanTitle = (
-  crop: { name: string; stageCount: number },
-  stage: { order?: number | undefined; day?: number | undefined; days?: number | undefined }
-): string => `${crop.name} | Etapa: ${stage?.order}/${crop.stageCount} | Dia ${stage?.day}/${stage?.days}`;
+export const getPlanTitle = (crop: {
+  name: string;
+  day?: number;
+  days?: number;
+  stageCount: number;
+  activeStage?: { order?: number } | null;
+}): string => `${crop.name} | Etapa: ${crop.activeStage?.order}/${crop.stageCount} | Dia ${crop.day}/${crop.days}`;
 
 const Dashboard = () => {
   const { setOptions } = useNavigation<HomeNavProps>();
@@ -43,15 +51,17 @@ const Dashboard = () => {
   const toggleShowPlanModal = () => setShowPlanModal((prevVal) => !prevVal);
   const toggleShowChangePlanModal = () => setShowChangePlanModal((prevVal) => !prevVal);
 
-  const { data: { activePlan } = {} } = useGetActivePlanQuery();
+  const { data: { activeCrop } = {} } = useGetActiveCropQuery();
+  const { data: { lastMeasure } = {}, loading: refreshing } = useGetLastMeasureQuery({ pollInterval: 10000 });
+  const { data: { enabledDevices } = {} } = useGetEnabledDevicesQuery({ pollInterval: 10000 });
 
   useEffect(() => {
-    if (!!activePlan && setOptions) {
+    if (setOptions) {
       setOptions({
         headerTitle: () =>
-          activePlan.crop && activePlan.stage ? (
+          activeCrop?.id ? (
             <Pressable onPress={toggleShowPlanModal}>
-              <Text>{getPlanTitle(activePlan.crop, activePlan?.stage)}</Text>
+              <Text>{getPlanTitle(activeCrop)}</Text>
             </Pressable>
           ) : (
             <Pressable onPress={toggleShowChangePlanModal}>
@@ -60,44 +70,55 @@ const Dashboard = () => {
           ),
         headerRight: () => (
           <IconButton
-            icon={(props) => <Icon name="plus" {...props} />}
+            icon={(props) => <Icon name="update" {...props} />}
             onPress={toggleShowChangePlanModal}
             pressEffect="none"
           />
         ),
       });
     }
-  }, [activePlan]);
+  }, [activeCrop]);
+
+  useEffect(
+    () =>
+      setOptions({
+        headerLeft: () => refreshing && <ActivityIndicator color="green" style={{ marginLeft: 10 }} />,
+      }),
+    [refreshing]
+  );
 
   const externalSensors = useMemo<Sensor[]>(
     () => [
-      { component: "luminosity", name: "Luminosidad", value: "67%" },
-      { component: "temperature", name: "Temperatura", value: "23ºC" },
-      { component: "humidity", name: "Humedad", value: "48%" },
+      { type: SensorType.Lighting, dataKey: Measures.Lighting, external: true },
+      { type: SensorType.Temperature, dataKey: Measures.OutsideTemperature, external: true },
+      { type: SensorType.Humidity, dataKey: Measures.OutsideHumidity, external: true },
     ],
-    []
+    [lastMeasure]
   );
 
   const internalSensors = useMemo<Sensor[]>(
     () => [
-      { component: "humidity", name: "Humedad", value: "60%" },
-      { component: "co2", name: "CO2", value: "691ppm" },
-      { component: "soil_humidity", name: "Humedad del suelo", value: "47%" },
-      { component: "temperature", name: "Temperatura", value: "24ºC" },
+      { type: SensorType.Humidity, dataKey: Measures.InsideHumidity },
+      { type: SensorType.Co2, dataKey: Measures.Co2 },
+      { type: SensorType.SoilHumidity, dataKey: Measures.SoilHumidity },
+      { type: SensorType.Temperature, dataKey: Measures.InsideTemperature },
     ],
-    []
+    [lastMeasure]
   );
 
-  const controls = useMemo<Control[]>(
-    () => [
-      { type: "fan", name: "Intractor", active: true },
-      // { type: "fan", name: "Ventilación", active: false },
-      { type: "water", name: "Riego", active: false },
-      { type: "light", name: "Iluminación", active: false },
-      { type: "extractor", name: "Extractor", active: false },
-    ],
-    []
-  );
+  const controls = useMemo<Control[]>(() => {
+    const activeDevices = enabledDevices?.map((item) => item.device) || [];
+    return enabledDevices
+      ? [
+          { type: Device.Fan, active: activeDevices.includes(Device.Fan) },
+          { type: Device.Irrigation, active: activeDevices.includes(Device.Irrigation) },
+          { type: Device.Light, active: activeDevices.includes(Device.Light) },
+          { type: Device.Extractor, active: activeDevices.includes(Device.Extractor) },
+        ]
+      : [];
+  }, [enabledDevices]);
+
+  if (!lastMeasure) return <Spinner loading />;
 
   return (
     <>
@@ -112,6 +133,7 @@ const Dashboard = () => {
                 <SensorIndicator
                   key={index}
                   sensor={sensor}
+                  value={lastMeasure[sensor.dataKey]}
                   onPress={setSelectedSensor}
                   styles={{
                     icon: { marginTop: 5 },
@@ -123,38 +145,44 @@ const Dashboard = () => {
             </HStack>
           </Surface>
 
-          <View style={styles.greenHouseWrapper}>
-            <VStack justify="around" items="center" style={{ paddingVertical: 20 }}>
-              <HStack justify="between" items="center">
-                <SensorIndicator
-                  sensor={internalSensors[0]}
-                  onPress={setSelectedSensor}
-                  styles={{ icon: styles.externalWeatherConditionIcon, value: styles.externalWeatherConditionValue }}
-                />
-                <VStack items="center">
+          {internalSensors.length ? (
+            <View style={styles.greenHouseWrapper}>
+              <VStack justify="around" items="center" style={{ paddingVertical: 20 }}>
+                <HStack justify="between" items="center">
                   <SensorIndicator
-                    sensor={internalSensors[1]}
+                    sensor={internalSensors[0]}
+                    value={lastMeasure[internalSensors[0].dataKey]}
                     onPress={setSelectedSensor}
-                    styles={{ icon: { fontSize: 40 }, value: styles.externalWeatherConditionValue }}
+                    styles={{ icon: styles.externalWeatherConditionIcon, value: styles.externalWeatherConditionValue }}
                   />
+                  <VStack items="center">
+                    <SensorIndicator
+                      sensor={internalSensors[1]}
+                      value={lastMeasure[internalSensors[1].dataKey]}
+                      onPress={setSelectedSensor}
+                      styles={{ icon: { fontSize: 40 }, value: styles.externalWeatherConditionValue }}
+                    />
 
-                  <Icon name="home-thermometer-outline" color="#20eb60" style={{ fontSize: 200 }} />
+                    <Icon name="home-thermometer-outline" color="#20eb60" style={{ fontSize: 200 }} />
 
+                    <SensorIndicator
+                      order="reverse"
+                      sensor={internalSensors[2]}
+                      value={lastMeasure[internalSensors[2].dataKey]}
+                      onPress={setSelectedSensor}
+                      styles={{ icon: { fontSize: 40 }, value: styles.externalWeatherConditionValue }}
+                    />
+                  </VStack>
                   <SensorIndicator
-                    order="reverse"
-                    sensor={internalSensors[2]}
+                    sensor={internalSensors[3]}
+                    value={lastMeasure[internalSensors[3].dataKey]}
                     onPress={setSelectedSensor}
-                    styles={{ icon: { fontSize: 40 }, value: styles.externalWeatherConditionValue }}
+                    styles={{ icon: styles.externalWeatherConditionIcon, value: styles.externalWeatherConditionValue }}
                   />
-                </VStack>
-                <SensorIndicator
-                  sensor={internalSensors[3]}
-                  onPress={setSelectedSensor}
-                  styles={{ icon: styles.externalWeatherConditionIcon, value: styles.externalWeatherConditionValue }}
-                />
-              </HStack>
-            </VStack>
-          </View>
+                </HStack>
+              </VStack>
+            </View>
+          ) : null}
 
           <Surface style={{ padding: 5, margin: 5 }} elevation={2}>
             <Text variant="h6" style={{ textAlign: "center" }}>
@@ -170,7 +198,7 @@ const Dashboard = () => {
       </ScrollView>
       {selectedSensor && <SensorModal sensor={selectedSensor} onDismiss={() => setSelectedSensor(null)} />}
       {selectedControl && <ControlModal control={selectedControl} onDismiss={() => setSelectedControl(null)} />}
-      {activePlan && showPlanModal && <PlanModal plan={activePlan} onDismiss={toggleShowPlanModal} />}
+      {activeCrop && showPlanModal && <PlanModal crop={activeCrop} onDismiss={toggleShowPlanModal} />}
       {showChangePlanModal && <ChangePlanModal onDismiss={toggleShowChangePlanModal} />}
     </>
   );

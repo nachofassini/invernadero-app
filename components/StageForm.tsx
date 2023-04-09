@@ -6,6 +6,8 @@ import * as yup from "yup";
 import { Input } from "./Input";
 import { GetStageQuery, Stage, StageInput } from "../gql";
 import { useEffect } from "react";
+import { ApolloError } from "@apollo/client";
+import { setFormValidationErrors } from "../utils/helpers";
 
 type Range = { low: number; high: number };
 
@@ -50,10 +52,11 @@ interface SageFormProps {
   stage?: GetStageQuery["stage"];
   loading: boolean;
   onSubmit: (data: Omit<StageInput, "cropId">) => void;
+  error?: ApolloError;
 }
 
-export const StageForm = ({ stage, loading, onSubmit }: SageFormProps) => {
-  const { control, handleSubmit, reset, formState } = useForm<StageData>({
+export const StageForm = ({ stage, loading, onSubmit, error }: SageFormProps) => {
+  const { control, handleSubmit, reset, setError } = useForm<StageData>({
     defaultValues: STAGES_INITIAL_VALUES,
     resolver: yupResolver(validationSchema),
   });
@@ -72,6 +75,10 @@ export const StageForm = ({ stage, loading, onSubmit }: SageFormProps) => {
       });
     }
   }, [stage]);
+
+  useEffect(() => {
+    if (error) setFormValidationErrors(error, setError);
+  }, [error]);
 
   const submitHandler = ({
     id,

@@ -1,11 +1,14 @@
-import { Snackbar as MuiSnackbar, SnackbarProps as MuiSnackbarProps } from "@react-native-material/core";
+import { Button, Snackbar as MuiSnackbar, SnackbarProps as MuiSnackbarProps } from "@react-native-material/core";
 import { useMemo } from "react";
 
 interface SnackbarProps extends MuiSnackbarProps {
+  position?: "absolute" | "relative";
   type?: "info" | "success" | "error";
+  actionTitle?: string;
+  onPress?: () => void;
 }
 
-export const Snackbar = ({ type, style, ...rest }: SnackbarProps) => {
+export const Snackbar = ({ type, position = "absolute", actionTitle, onPress, style, ...rest }: SnackbarProps) => {
   const colorStyles = useMemo(() => {
     switch (type) {
       case "success":
@@ -20,13 +23,16 @@ export const Snackbar = ({ type, style, ...rest }: SnackbarProps) => {
   return (
     <MuiSnackbar
       style={{
-        position: "absolute",
-        top: 15,
-        left: 15,
-        right: 15,
+        position,
+        ...(position === "absolute" ? { top: 15, left: 15, right: 15 } : { marginRight: 10, marginBottom: 20 }),
         ...colorStyles,
         ...(typeof style === "object" ? style : {}),
       }}
+      {...(onPress && actionTitle
+        ? {
+            action: <Button title={actionTitle} color="secondary" onPress={onPress} compact />,
+          }
+        : {})}
       {...rest}
     />
   );

@@ -8,7 +8,6 @@ const config: CodegenConfig = {
   hooks: { afterOneFileWrite: ["prettier --write"] },
   generates: {
     "gql/index.ts": {
-      // preset: "client",
       plugins: ["typescript", "typescript-operations", "typescript-react-apollo"],
     },
   },

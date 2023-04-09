@@ -1,16 +1,17 @@
 import { useState } from "react";
 import { Control, Controller, FieldValues, Path, PathValue, UnpackNestedValue } from "react-hook-form";
-import DropDownPicker, { DropDownPickerProps, ItemType } from "react-native-dropdown-picker";
+import { Text } from "react-native";
+import DropDownPicker, { DropDownPickerProps, ItemType, ValueType } from "react-native-dropdown-picker";
 
-interface SelectProps<T extends FieldValues, F> extends DropDownPickerProps<F> {
+interface SelectProps<T extends FieldValues, F extends ValueType> extends DropDownPickerProps<F> {
   control: Control<T>;
   name: Path<T>;
   defaultValue?: UnpackNestedValue<PathValue<T, Path<T>>>;
-  items: ItemType<string>[];
+  items: ItemType<F>[];
   placeholder?: string;
 }
 
-export const Select = <T extends FieldValues, F extends any>({
+export const Select = <T extends FieldValues, F extends ValueType>({
   control,
   items,
   name,
@@ -23,17 +24,20 @@ export const Select = <T extends FieldValues, F extends any>({
     <Controller
       control={control}
       name={name}
-      render={({ field: { ref, ...props } }) => (
-        <DropDownPicker
-          open={open}
-          setOpen={setOpen}
-          items={items}
-          setValue={props.onChange}
-          onChangeValue={props.onChange}
-          {...props}
-          placeholder={placeholder}
-          {...rest}
-        />
+      render={({ field: { ref, ...props }, fieldState }) => (
+        <>
+          <DropDownPicker
+            open={open}
+            setOpen={setOpen}
+            items={items}
+            setValue={props.onChange}
+            onChangeValue={props.onChange}
+            {...props}
+            placeholder={placeholder}
+            {...rest}
+          />
+          {fieldState.error && <Text>{fieldState.error.message}</Text>}
+        </>
       )}
     />
   );

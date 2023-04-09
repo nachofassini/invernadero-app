@@ -1,0 +1,52 @@
+query GetActivation($id: ID!) {
+  activation(id: $id) {
+    id
+    activatedBy
+    createdAt
+    activeUntil
+    enabled
+    device
+    amount
+    measureUnit
+    measureId
+  }
+}
+
+query GetActivations($device: Device) {
+  activations(device: $device) {
+    id
+    activatedBy
+    createdAt
+    activeUntil
+    enabled
+    device
+    amount
+    measureUnit
+    measureId
+  }
+}
+
+query GetEnabledDevices {
+  enabledDevices {
+    id
+    device
+  }
+}
+
+mutation ActivateDevice($device: Device!, $amount: Float!) {
+  activateDevice(device: $device, amount: $amount) {
+    id
+    activatedBy
+    createdAt
+    activeUntil
+    enabled
+    device
+    amount
+    measureUnit
+    measureId
+  }
+}
+
+mutation deactivateDevice($device: Device!) {
+  deactivateDevice(device: $device)
+}

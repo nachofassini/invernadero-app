@@ -1,11 +1,11 @@
-import { Button, ListItem } from "@react-native-material/core";
+import { ListItem } from "@react-native-material/core";
 import Icon from "@expo/vector-icons/MaterialCommunityIcons";
 import { useLayoutEffect } from "react";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { StagesScreenProps } from "../types/navigation";
-import { RefreshControl, ScrollView } from "react-native";
 import { useGetStagesQuery } from "../gql";
 import { Snackbar } from "../components/Snackbar";
+import { ScrollableView } from "../components/ScrollableView";
 
 const Stages = () => {
   const { setOptions, navigate } = useNavigation<StagesScreenProps["navigation"]>();
@@ -20,19 +20,13 @@ const Stages = () => {
   const { data: { stages } = {}, error, loading, refetch } = useGetStagesQuery({ variables: { cropId } });
 
   return (
-    <ScrollView refreshControl={<RefreshControl refreshing={loading} onRefresh={refetch} />}>
+    <ScrollableView loading={loading} onRefresh={refetch}>
       {error && !loading && <Snackbar type="error" message="Upss. Ocurrió un error cargando las." />}
       {stages?.length === 0 ? (
         <Snackbar
           message="Este cultivo no tiene ninguna etapa todavía."
-          action={
-            <Button
-              title="¡Agregá una etapa!"
-              color="secondary"
-              onPress={() => navigate("NewStage", { cropId })}
-              compact
-            />
-          }
+          actionTitle="¡Agregá una etapa!"
+          onPress={() => navigate("NewStage", { cropId })}
         />
       ) : (
         stages?.map((stage) => (
@@ -46,7 +40,7 @@ const Stages = () => {
           />
         ))
       )}
-    </ScrollView>
+    </ScrollableView>
   );
 };
 

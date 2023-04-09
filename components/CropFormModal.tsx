@@ -13,6 +13,7 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { CropInput, useCreateOrUpdateCropMutation, useDeleteCropMutation } from "../gql";
+import { setFormValidationErrors } from "../utils/helpers";
 
 interface CropFormModalProps {
   defaultValues: CropInput;
@@ -31,11 +32,15 @@ const validationSchema = yup
   .required();
 
 export const CropFormModal = ({ defaultValues, onDismiss }: CropFormModalProps) => {
-  const { control, handleSubmit } = useForm<CropInput>({ defaultValues, resolver: yupResolver(validationSchema) });
+  const { control, handleSubmit, setError } = useForm<CropInput>({
+    defaultValues,
+    resolver: yupResolver(validationSchema),
+  });
 
   const [creteOrUpdate, { loading }] = useCreateOrUpdateCropMutation({
     onCompleted: onDismiss,
     refetchQueries: ["GetCrops"],
+    onError: (error) => setFormValidationErrors(error, setError),
   });
   const [deleteFn, { loading: deleting }] = useDeleteCropMutation({
     onCompleted: onDismiss,
@@ -62,7 +67,7 @@ export const CropFormModal = ({ defaultValues, onDismiss }: CropFormModalProps) 
               title={defaultValues?.id ? "Guardar" : "Agregar"}
               color="secondary"
               onPress={handleSubmit((data) => creteOrUpdate({ variables: { data } }))}
-              loading={loading}
+              loading={loading || false}
               disabled={isFetching}
             />
             <Button title="Cancelar" color="primary" onPress={onDismiss} />

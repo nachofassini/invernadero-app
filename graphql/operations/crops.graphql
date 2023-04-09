@@ -1,42 +1,60 @@
-query GetActivePlan {
-  activePlan {
-    crop {
+fragment CropBasicData on Crop {
+  id
+  name
+  active
+  activeSince
+  day
+}
+
+query GetActiveCrop {
+  activeCrop {
+    ...CropBasicData
+    days
+    stageCount
+    activeStage {
       id
       name
-      active
-      stageCount
-    }
-    stage {
-      id
-      name
+      order
       day
       days
-      order
+      minTemperature
+      maxTemperature
+      minHumidity
+      maxHumidity
+      minCo2
+      maxCo2
+      lightHours
+      irrigation
     }
   }
 }
 
 query GetCrops {
   crops {
-    id
-    name
-    active
+    ...CropBasicData
+    days
     stageCount
   }
 }
 
+mutation ActivateCrop($id: ID!) {
+  activateCrop(id: $id) {
+    ...CropBasicData
+  }
+}
+
+mutation DeactivateCrop {
+  deactivateCrop
+}
+
 mutation CreateOrUpdateCrop($data: CropInput!) {
   upsertCrop(data: $data) {
-    id
-    name
-    active
+    ...CropBasicData
   }
 }
 
 mutation DeleteCrop($id: ID!) {
   deleteCrop(id: $id) {
-    id
-    name
-    active
+    ...CropBasicData
   }
 }

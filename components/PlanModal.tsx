@@ -9,37 +9,57 @@ import {
   Divider,
   DialogActions,
 } from "@react-native-material/core";
-import { Plan } from "../pages/Dashboard";
 import { useNavigation } from "@react-navigation/native";
+import { GetActiveCropQuery, useDeactivateCropMutation } from "../gql";
+import { HomeNavProps } from "../types/navigation";
 
 interface PlanModalProps {
   onDismiss: () => void;
-  plan: Plan;
+  crop: GetActiveCropQuery["activeCrop"];
 }
 
-export const PlanModal = ({ onDismiss, plan }: PlanModalProps) => {
-  const { navigate } = useNavigation();
+export const PlanModal = ({ onDismiss, crop }: PlanModalProps) => {
+  const { navigate } = useNavigation<HomeNavProps>();
+
+  const [deactivateCrop, { loading }] = useDeactivateCropMutation({
+    refetchQueries: ["GetActiveCrop", "GetCrops"],
+    onCompleted: onDismiss,
+  });
+
+  if (!crop?.activeStage) return null;
+  const { name, stageCount, activeStage } = crop;
 
   const handleEditStage = () => {
     onDismiss();
-    // @ts-ignore
     navigate("Crops", {
+      // @ts-ignore
       screen: "EditStage",
-      params: { stageId: plan.stage.id, stageName: plan.stage.name },
+      params: {
+        cropId: crop?.id,
+        stageId: activeStage.id,
+        stageName: activeStage.name,
+      },
     });
   };
 
   return (
     // @ts-ignore
     <Dialog visible onDismiss={onDismiss}>
-      <DialogHeader title={() => <Text variant="h4">{plan.crop.name}</Text>} />
+      <DialogHeader
+        title={() => (
+          <HStack justify="between" items="center" style={{ width: "100%" }}>
+            <Text variant="h4">{name}</Text>
+            <Text variant="h5">
+              Etapa {activeStage.order}/{stageCount}
+            </Text>
+          </HStack>
+        )}
+      />
       <DialogContent>
-        <HStack justify="between">
+        <HStack justify="between" items="center">
+          <Text variant="h5">{activeStage.name}</Text>
           <Text variant="h5">
-            Etapa {plan.stage.order}/{plan.crop.stageCount}
-          </Text>
-          <Text variant="h5">
-            Dia {plan.stage.day}/{plan.stage.days}
+            Dia {activeStage.day}/{activeStage.days}
           </Text>
         </HStack>
         <VStack spacing={8} style={{ marginVertical: 20 }}>
@@ -48,37 +68,40 @@ export const PlanModal = ({ onDismiss, plan }: PlanModalProps) => {
             <VStack>
               <Text>Temperatura (ºC)</Text>
               <Text style={{ alignSelf: "flex-end" }}>
-                Min: {plan.stage.temperature.low} | Max: {plan.stage.temperature.high}
+                Min: {activeStage.minTemperature} | Max: {activeStage.maxTemperature}
               </Text>
             </VStack>
             <VStack justify="between">
               <Text>Humedad relativa (%)</Text>
               <Text style={{ alignSelf: "flex-end" }}>
-                Min: {plan.stage.humidity.low} | Max: {plan.stage.humidity.high}
+                Min: {activeStage.minHumidity} | Max: {activeStage.maxHumidity}
               </Text>
             </VStack>
             <HStack justify="between">
               <Text>CO2 (ppm)</Text>
               <Text>
-                Min: {plan.stage.co2.low} | Max: {plan.stage.co2.high}
+                Min: {activeStage.minCo2} | Max: {activeStage.maxCo2}
               </Text>
             </HStack>
             <HStack justify="between">
               <Text>Horas de Luz (Hs.)</Text>
-              <Text>{plan.stage.light}</Text>
+              <Text>{activeStage.lightHours}</Text>
             </HStack>
             <HStack justify="between">
               <Text>Riego diario (mm3)</Text>
-              <Text>{plan.stage.water}</Text>
+              <Text>{activeStage.irrigation}</Text>
             </HStack>
           </VStack>
         </VStack>
       </DialogContent>
       <DialogActions>
-        <HStack justify="between" style={{ width: "100%" }}>
-          <Button onPress={handleEditStage} title="Modificar etapa" color="secondary" />
-          <Button onPress={onDismiss} title="Cerrar" />
-        </HStack>
+        <VStack spacing={20} style={{ width: "100%" }}>
+          <HStack justify="between">
+            <Button onPress={handleEditStage} title="Modificar etapa" color="secondary" />
+            <Button onPress={onDismiss} title="Cerrar" />
+          </HStack>
+          <Button loading={loading} onPress={() => deactivateCrop()} title="Detener" color="error" />
+        </VStack>
       </DialogActions>
     </Dialog>
   );

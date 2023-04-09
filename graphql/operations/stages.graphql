@@ -1,79 +1,59 @@
+fragment StageBasicData on Stage {
+  id
+  cropId
+  name
+  order
+  createdAt
+  updatedAt
+}
+
+fragment StageDynamicData on Stage {
+  active
+  day
+}
+
+fragment WeatherSettings on Stage {
+  days
+  minTemperature
+  maxTemperature
+  minHumidity
+  maxHumidity
+  minCo2
+  maxCo2
+}
+
 query GetStage($id: ID!) {
   stage(id: $id) {
-    id
-    cropId
+    ...StageBasicData
+    ...StageDynamicData
+    ...WeatherSettings
     crop {
-      id
-      name
-      active
+      ...CropBasicData
     }
-    name
-    active
-    day
-    order
-    days
-    minTemperature
-    maxTemperature
-    minHumidity
-    maxHumidity
-    minCo2
-    maxCo2
-    lightHours
-    irrigation
-    createdAt
-    updatedAt
   }
 }
 
 query GetStages($cropId: ID!) {
   stages(cropId: $cropId) {
-    id
-    cropId
-    name
-    active
-    day
-    order
-    days
-    minTemperature
-    maxTemperature
-    minHumidity
-    maxHumidity
-    minCo2
-    maxCo2
-    lightHours
-    irrigation
-    createdAt
-    updatedAt
+    ...StageBasicData
+    ...StageDynamicData
+    ...WeatherSettings
+    crop {
+      ...CropBasicData
+    }
   }
 }
 
 mutation CreateOrUpdateStage($data: StageInput!) {
   upsertStage(data: $data) {
-    id
-    cropId
-    name
-    active
-    day
-    order
-    days
-    minTemperature
-    maxTemperature
-    minHumidity
-    maxHumidity
-    minCo2
-    maxCo2
-    lightHours
-    irrigation
-    createdAt
-    updatedAt
+    ...StageBasicData
+    ...StageDynamicData
+    ...WeatherSettings
   }
 }
 
 mutation DeleteStage($id: ID!) {
   deleteStage(id: $id) {
-    id
-    name
-    cropId
-    active
+    ...StageBasicData
   }
 }

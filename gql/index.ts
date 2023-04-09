@@ -19,19 +19,40 @@ export type Scalars = {
 
 export type Activation = {
   __typename?: "Activation";
-  /** When the stage was created. */
-  created_at: Scalars["DateTime"];
-  /** Active start date */
-  from: Scalars["Date"];
+  /** Activation trigger motive */
+  activatedBy?: Maybe<ActivationType>;
+  /** Active end date */
+  activeUntil?: Maybe<Scalars["Date"]>;
+  /** value of the amount of water/ minutes of vent / hs of light delivered / etc... */
+  amount: Scalars["Float"];
+  createdAt: Scalars["DateTime"];
+  /** device name */
+  device: Device;
+  /** Current status */
+  enabled: Scalars["Boolean"];
   /** Unique primary key. */
   id: Scalars["ID"];
-  /** Non-unique device name. */
-  name: Scalars["String"];
-  /** Active end date */
-  to: Scalars["Date"];
-  /** When the stage was last updated. */
-  updated_at: Scalars["DateTime"];
+  /** Measure that triggered the activation */
+  measure?: Maybe<Measure>;
+  /** Measure id that triggered the activation */
+  measureId?: Maybe<Scalars["ID"]>;
+  /** measure unit for the amount delivered (mm3 for water, mins for vent, hs for lighting, etc.. */
+  measureUnit?: Maybe<MeasureUnit>;
+  updatedAt: Scalars["DateTime"];
 };
+
+export enum ActivationType {
+  HighCo2 = "high_co2",
+  HighHumidity = "high_humidity",
+  HighSoilHumidity = "high_soil_humidity",
+  HighTemp = "high_temp",
+  LowCo2 = "low_co2",
+  LowHumidity = "low_humidity",
+  LowLighting = "low_lighting",
+  LowSoilHumidity = "low_soil_humidity",
+  LowTemp = "low_temp",
+  Manual = "manual",
+}
 
 export type ActivePlan = {
   __typename?: "ActivePlan";
@@ -42,7 +63,15 @@ export type ActivePlan = {
 export type Crop = {
   __typename?: "Crop";
   active: Scalars["Boolean"];
+  /** Date in which crop cultivation has been enabled. Only one crop will have this prop set at a time */
+  activeSince?: Maybe<Scalars["DateTime"]>;
+  activeStage?: Maybe<Stage>;
+  activeUntil?: Maybe<Scalars["DateTime"]>;
   createdAt: Scalars["DateTime"];
+  /** Days since have been activated */
+  day: Scalars["Int"];
+  /** Total days to cultivate crop */
+  days: Scalars["Int"];
   id: Scalars["ID"];
   name: Scalars["String"];
   stageCount: Scalars["Int"];
@@ -51,7 +80,6 @@ export type Crop = {
 };
 
 export type CropInput = {
-  active?: InputMaybe<Scalars["Boolean"]>;
   id?: InputMaybe<Scalars["ID"]>;
   name: Scalars["String"];
 };
@@ -66,70 +94,109 @@ export type DateTimeRange = {
   to: Scalars["DateTime"];
 };
 
+export enum Device {
+  Extractor = "EXTRACTOR",
+  Fan = "FAN",
+  Irrigation = "IRRIGATION",
+  Light = "LIGHT",
+}
+
+export enum DeviceMeasureUnits {
+  Extractor = "EXTRACTOR",
+  Fan = "FAN",
+  Irrigation = "IRRIGATION",
+  Light = "LIGHT",
+}
+
 export type Measure = Sensors & {
   __typename?: "Measure";
+  /** Co2 ppm */
+  co2: Scalars["Float"];
   /** Electricity consumption. */
   consumption: Scalars["Float"];
   /** When the measure was taken */
-  created_at: Scalars["DateTime"];
+  createdAt: Scalars["DateTime"];
   /** Unique primary key. */
   id: Scalars["ID"];
   /** Greenhouse humidity */
-  inside_humidity: Scalars["Float"];
-  /** Greenhouse li */
-  inside_lighting: Scalars["Float"];
+  insideHumidity: Scalars["Float"];
   /** Greenhouse temperature */
-  inside_temperature: Scalars["Float"];
+  insideTemperature: Scalars["Float"];
+  /** Greenhouse light percentage */
+  lighting: Scalars["Float"];
   /** External temperature */
-  outside_humidity: Scalars["Float"];
+  outsideHumidity: Scalars["Float"];
   /** External temperature */
-  outside_lighting: Scalars["Float"];
-  /** External temperature */
-  outside_temperature: Scalars["Float"];
+  outsideTemperature: Scalars["Float"];
   /** Greenhouse soil humidity */
-  soil_humidity: Scalars["Float"];
+  soilHumidity: Scalars["Float"];
   /** When the measure was last updated. */
-  updated_at: Scalars["DateTime"];
+  updatedAt: Scalars["DateTime"];
 };
 
 export type MeasureStatistic = Sensors & {
   __typename?: "MeasureStatistic";
+  /** Co2 ppm */
+  co2: Scalars["Float"];
   /** Electricity consumption. */
   consumption: Scalars["Float"];
   /** Greenhouse humidity */
-  inside_humidity: Scalars["Float"];
-  /** Greenhouse li */
-  inside_lighting: Scalars["Float"];
+  insideHumidity: Scalars["Float"];
   /** Greenhouse temperature */
-  inside_temperature: Scalars["Float"];
+  insideTemperature: Scalars["Float"];
+  /** Greenhouse light percentage */
+  lighting: Scalars["Float"];
   /** External temperature */
-  outside_humidity: Scalars["Float"];
+  outsideHumidity: Scalars["Float"];
   /** External temperature */
-  outside_lighting: Scalars["Float"];
-  /** External temperature */
-  outside_temperature: Scalars["Float"];
+  outsideTemperature: Scalars["Float"];
   /** Greenhouse soil humidity */
-  soil_humidity: Scalars["Float"];
+  soilHumidity: Scalars["Float"];
 };
+
+export enum MeasureUnit {
+  Celsius = "celsius",
+  Hours = "hours",
+  M3 = "m3",
+  Mins = "mins",
+  Mm3 = "mm3",
+  Percentage = "percentage",
+  Ppm = "ppm",
+}
+
+export enum Measures {
+  Co2 = "co2",
+  InsideHumidity = "insideHumidity",
+  InsideTemperature = "insideTemperature",
+  Lighting = "lighting",
+  OutsideHumidity = "outsideHumidity",
+  OutsideTemperature = "outsideTemperature",
+  SoilHumidity = "soilHumidity",
+}
 
 export type Mutation = {
   __typename?: "Mutation";
-  activateDevice?: Maybe<Activation>;
-  deactivateDevice?: Maybe<Activation>;
+  activateCrop: Crop;
+  activateDevice: Activation;
+  deactivateCrop: Scalars["Int"];
+  deactivateDevice: Scalars["Int"];
   deleteCrop: Crop;
   deleteStage: Stage;
   upsertCrop: Crop;
   upsertStage: Stage;
 };
 
+export type MutationActivateCropArgs = {
+  id: Scalars["ID"];
+};
+
 export type MutationActivateDeviceArgs = {
-  deviceId: Scalars["ID"];
-  from: Scalars["DateTime"];
-  to: Scalars["DateTime"];
+  amount: Scalars["Float"];
+  device: Device;
 };
 
 export type MutationDeactivateDeviceArgs = {
-  id: Scalars["ID"];
+  device: Device;
 };
 
 export type MutationDeleteCropArgs = {
@@ -222,16 +289,21 @@ export type PaginatorInfo = {
 export type Query = {
   __typename?: "Query";
   /** Find a single stage by an identifying attribute. */
-  activation?: Maybe<Activation>;
-  activations?: Maybe<Array<Maybe<Activation>>>;
+  activation: Activation;
+  /** Get last activations, may be filtered by device type */
+  activations: Array<Activation>;
   activeCrop?: Maybe<Crop>;
+  /** @deprecated Use `activeCrop` instead */
   activePlan: ActivePlan;
   crop: Crop;
   crops: Array<Crop>;
+  /** Get currently enabled devices */
+  enabledDevices: Array<Activation>;
   /** Get last measure */
-  lastMeasure?: Maybe<Measure>;
+  lastMeasure: Measure;
+  lastMeasures: Array<Measure>;
   /** Find a single stage by an identifying attribute. */
-  measure?: Maybe<Measure>;
+  measure: Measure;
   /** Get measures by date */
   measures: Array<Measure>;
   measuresAverage: Array<MeasureStatistic>;
@@ -255,7 +327,7 @@ export type QueryActivationArgs = {
 
 /** Indicates what fields are available at the top level of a query operation. */
 export type QueryActivationsArgs = {
-  id: Scalars["ID"];
+  device?: InputMaybe<Device>;
 };
 
 /** Indicates what fields are available at the top level of a query operation. */
@@ -276,22 +348,22 @@ export type QueryMeasureArgs = {
 
 /** Indicates what fields are available at the top level of a query operation. */
 export type QueryMeasuresArgs = {
-  created_at: DateTimeRange;
+  createdAt: DateTimeRange;
 };
 
 /** Indicates what fields are available at the top level of a query operation. */
 export type QueryMeasuresAverageArgs = {
-  created_at: DateTimeRange;
+  createdAt: DateTimeRange;
 };
 
 /** Indicates what fields are available at the top level of a query operation. */
 export type QueryMeasuresAverageByDayArgs = {
-  created_at: DateRange;
+  createdAt: DateRange;
 };
 
 /** Indicates what fields are available at the top level of a query operation. */
 export type QueryMeasuresAverageByHourArgs = {
-  created_at: DateTimeRange;
+  createdAt: DateTimeRange;
 };
 
 /** Indicates what fields are available at the top level of a query operation. */
@@ -316,22 +388,38 @@ export type QueryUsersArgs = {
   name?: InputMaybe<Scalars["String"]>;
 };
 
+export enum SensorMeasureUnits {
+  Co2 = "Co2",
+  Humidity = "Humidity",
+  Lighting = "Lighting",
+  SoilHumidity = "SoilHumidity",
+  Temperature = "Temperature",
+}
+
+export enum SensorType {
+  Co2 = "Co2",
+  Humidity = "Humidity",
+  Lighting = "Lighting",
+  SoilHumidity = "SoilHumidity",
+  Temperature = "Temperature",
+}
+
 export type Sensors = {
+  /** Co2 ppm */
+  co2: Scalars["Float"];
   consumption: Scalars["Float"];
   /** Greenhouse humidity */
-  inside_humidity: Scalars["Float"];
-  /** Greenhouse li */
-  inside_lighting: Scalars["Float"];
+  insideHumidity: Scalars["Float"];
   /** Greenhouse temperature */
-  inside_temperature: Scalars["Float"];
+  insideTemperature: Scalars["Float"];
+  /** Outside lightning percentage */
+  lighting: Scalars["Float"];
   /** External temperature */
-  outside_humidity: Scalars["Float"];
+  outsideHumidity: Scalars["Float"];
   /** External temperature */
-  outside_lighting: Scalars["Float"];
-  /** External temperature */
-  outside_temperature: Scalars["Float"];
+  outsideTemperature: Scalars["Float"];
   /** Greenhouse soil humidity */
-  soil_humidity: Scalars["Float"];
+  soilHumidity: Scalars["Float"];
 };
 
 /** Information about pagination using a simple paginator. */
@@ -359,12 +447,14 @@ export enum SortOrder {
   Desc = "DESC",
 }
 
-export type Stage = {
+export type Stage = WeatherSetup & {
   __typename?: "Stage";
-  active?: Maybe<Scalars["Boolean"]>;
+  /** Current stage status */
+  active: Scalars["Boolean"];
   createdAt: Scalars["DateTime"];
   crop: Crop;
   cropId: Scalars["Int"];
+  /** If stage is active, represents days since it has been activated */
   day?: Maybe<Scalars["Int"]>;
   /** Stage duration */
   days: Scalars["Int"];
@@ -386,7 +476,7 @@ export type Stage = {
   /** Minimum temperature */
   minTemperature: Scalars["Float"];
   name: Scalars["String"];
-  order?: Maybe<Scalars["Int"]>;
+  order: Scalars["Int"];
   updatedAt: Scalars["DateTime"];
 };
 
@@ -441,30 +531,167 @@ export type User = {
   updated_at: Scalars["DateTime"];
 };
 
-export type GetActivePlanQueryVariables = Exact<{ [key: string]: never }>;
+export type WeatherSetup = {
+  irrigation: Scalars["Int"];
+  lightHours: Scalars["Float"];
+  maxCo2: Scalars["Float"];
+  maxHumidity: Scalars["Float"];
+  maxTemperature: Scalars["Float"];
+  minCo2: Scalars["Float"];
+  minHumidity: Scalars["Float"];
+  minTemperature: Scalars["Float"];
+};
 
-export type GetActivePlanQuery = {
+export type GetActivationQueryVariables = Exact<{
+  id: Scalars["ID"];
+}>;
+
+export type GetActivationQuery = {
   __typename?: "Query";
-  activePlan: {
-    __typename?: "ActivePlan";
-    crop?: { __typename?: "Crop"; id: string; name: string; active: boolean; stageCount: number } | null;
-    stage?: {
+  activation: {
+    __typename?: "Activation";
+    id: string;
+    activatedBy?: ActivationType | null;
+    createdAt: any;
+    activeUntil?: any | null;
+    enabled: boolean;
+    device: Device;
+    amount: number;
+    measureUnit?: MeasureUnit | null;
+    measureId?: string | null;
+  };
+};
+
+export type GetActivationsQueryVariables = Exact<{
+  device?: InputMaybe<Device>;
+}>;
+
+export type GetActivationsQuery = {
+  __typename?: "Query";
+  activations: Array<{
+    __typename?: "Activation";
+    id: string;
+    activatedBy?: ActivationType | null;
+    createdAt: any;
+    activeUntil?: any | null;
+    enabled: boolean;
+    device: Device;
+    amount: number;
+    measureUnit?: MeasureUnit | null;
+    measureId?: string | null;
+  }>;
+};
+
+export type GetEnabledDevicesQueryVariables = Exact<{ [key: string]: never }>;
+
+export type GetEnabledDevicesQuery = {
+  __typename?: "Query";
+  enabledDevices: Array<{ __typename?: "Activation"; id: string; device: Device }>;
+};
+
+export type ActivateDeviceMutationVariables = Exact<{
+  device: Device;
+  amount: Scalars["Float"];
+}>;
+
+export type ActivateDeviceMutation = {
+  __typename?: "Mutation";
+  activateDevice: {
+    __typename?: "Activation";
+    id: string;
+    activatedBy?: ActivationType | null;
+    createdAt: any;
+    activeUntil?: any | null;
+    enabled: boolean;
+    device: Device;
+    amount: number;
+    measureUnit?: MeasureUnit | null;
+    measureId?: string | null;
+  };
+};
+
+export type DeactivateDeviceMutationVariables = Exact<{
+  device: Device;
+}>;
+
+export type DeactivateDeviceMutation = { __typename?: "Mutation"; deactivateDevice: number };
+
+export type CropBasicDataFragment = {
+  __typename?: "Crop";
+  id: string;
+  name: string;
+  active: boolean;
+  activeSince?: any | null;
+  day: number;
+};
+
+export type GetActiveCropQueryVariables = Exact<{ [key: string]: never }>;
+
+export type GetActiveCropQuery = {
+  __typename?: "Query";
+  activeCrop?: {
+    __typename?: "Crop";
+    days: number;
+    stageCount: number;
+    id: string;
+    name: string;
+    active: boolean;
+    activeSince?: any | null;
+    day: number;
+    activeStage?: {
       __typename?: "Stage";
       id: string;
       name: string;
+      order: number;
       day?: number | null;
       days: number;
-      order?: number | null;
+      minTemperature: number;
+      maxTemperature: number;
+      minHumidity: number;
+      maxHumidity: number;
+      minCo2: number;
+      maxCo2: number;
+      lightHours: number;
+      irrigation: number;
     } | null;
-  };
+  } | null;
 };
 
 export type GetCropsQueryVariables = Exact<{ [key: string]: never }>;
 
 export type GetCropsQuery = {
   __typename?: "Query";
-  crops: Array<{ __typename?: "Crop"; id: string; name: string; active: boolean; stageCount: number }>;
+  crops: Array<{
+    __typename?: "Crop";
+    days: number;
+    stageCount: number;
+    id: string;
+    name: string;
+    active: boolean;
+    activeSince?: any | null;
+    day: number;
+  }>;
 };
+
+export type ActivateCropMutationVariables = Exact<{
+  id: Scalars["ID"];
+}>;
+
+export type ActivateCropMutation = {
+  __typename?: "Mutation";
+  activateCrop: {
+    __typename?: "Crop";
+    id: string;
+    name: string;
+    active: boolean;
+    activeSince?: any | null;
+    day: number;
+  };
+};
+
+export type DeactivateCropMutationVariables = Exact<{ [key: string]: never }>;
+
+export type DeactivateCropMutation = { __typename?: "Mutation"; deactivateCrop: number };
 
 export type CreateOrUpdateCropMutationVariables = Exact<{
   data: CropInput;
@@ -472,7 +699,7 @@ export type CreateOrUpdateCropMutationVariables = Exact<{
 
 export type CreateOrUpdateCropMutation = {
   __typename?: "Mutation";
-  upsertCrop: { __typename?: "Crop"; id: string; name: string; active: boolean };
+  upsertCrop: { __typename?: "Crop"; id: string; name: string; active: boolean; activeSince?: any | null; day: number };
 };
 
 export type DeleteCropMutationVariables = Exact<{
@@ -481,7 +708,68 @@ export type DeleteCropMutationVariables = Exact<{
 
 export type DeleteCropMutation = {
   __typename?: "Mutation";
-  deleteCrop: { __typename?: "Crop"; id: string; name: string; active: boolean };
+  deleteCrop: { __typename?: "Crop"; id: string; name: string; active: boolean; activeSince?: any | null; day: number };
+};
+
+export type GetLastMeasureQueryVariables = Exact<{ [key: string]: never }>;
+
+export type GetLastMeasureQuery = {
+  __typename?: "Query";
+  lastMeasure: {
+    __typename?: "Measure";
+    id: string;
+    createdAt: any;
+    consumption: number;
+    insideTemperature: number;
+    outsideTemperature: number;
+    insideHumidity: number;
+    outsideHumidity: number;
+    soilHumidity: number;
+    co2: number;
+    lighting: number;
+  };
+};
+
+export type GetLastMeasuresQueryVariables = Exact<{ [key: string]: never }>;
+
+export type GetLastMeasuresQuery = {
+  __typename?: "Query";
+  lastMeasures: Array<{
+    __typename?: "Measure";
+    id: string;
+    createdAt: any;
+    consumption: number;
+    insideTemperature: number;
+    outsideTemperature: number;
+    insideHumidity: number;
+    outsideHumidity: number;
+    soilHumidity: number;
+    co2: number;
+    lighting: number;
+  }>;
+};
+
+export type StageBasicDataFragment = {
+  __typename?: "Stage";
+  id: string;
+  cropId: number;
+  name: string;
+  order: number;
+  createdAt: any;
+  updatedAt: any;
+};
+
+export type StageDynamicDataFragment = { __typename?: "Stage"; active: boolean; day?: number | null };
+
+export type WeatherSettingsFragment = {
+  __typename?: "Stage";
+  days: number;
+  minTemperature: number;
+  maxTemperature: number;
+  minHumidity: number;
+  maxHumidity: number;
+  minCo2: number;
+  maxCo2: number;
 };
 
 export type GetStageQueryVariables = Exact<{
@@ -495,9 +783,11 @@ export type GetStageQuery = {
     id: string;
     cropId: number;
     name: string;
-    active?: boolean | null;
+    order: number;
+    createdAt: any;
+    updatedAt: any;
+    active: boolean;
     day?: number | null;
-    order?: number | null;
     days: number;
     minTemperature: number;
     maxTemperature: number;
@@ -505,11 +795,7 @@ export type GetStageQuery = {
     maxHumidity: number;
     minCo2: number;
     maxCo2: number;
-    lightHours: number;
-    irrigation: number;
-    createdAt: any;
-    updatedAt: any;
-    crop: { __typename?: "Crop"; id: string; name: string; active: boolean };
+    crop: { __typename?: "Crop"; id: string; name: string; active: boolean; activeSince?: any | null; day: number };
   };
 };
 
@@ -524,9 +810,11 @@ export type GetStagesQuery = {
     id: string;
     cropId: number;
     name: string;
-    active?: boolean | null;
+    order: number;
+    createdAt: any;
+    updatedAt: any;
+    active: boolean;
     day?: number | null;
-    order?: number | null;
     days: number;
     minTemperature: number;
     maxTemperature: number;
@@ -534,10 +822,7 @@ export type GetStagesQuery = {
     maxHumidity: number;
     minCo2: number;
     maxCo2: number;
-    lightHours: number;
-    irrigation: number;
-    createdAt: any;
-    updatedAt: any;
+    crop: { __typename?: "Crop"; id: string; name: string; active: boolean; activeSince?: any | null; day: number };
   }>;
 };
 
@@ -552,9 +837,11 @@ export type CreateOrUpdateStageMutation = {
     id: string;
     cropId: number;
     name: string;
-    active?: boolean | null;
+    order: number;
+    createdAt: any;
+    updatedAt: any;
+    active: boolean;
     day?: number | null;
-    order?: number | null;
     days: number;
     minTemperature: number;
     maxTemperature: number;
@@ -562,10 +849,6 @@ export type CreateOrUpdateStageMutation = {
     maxHumidity: number;
     minCo2: number;
     maxCo2: number;
-    lightHours: number;
-    irrigation: number;
-    createdAt: any;
-    updatedAt: any;
   };
 };
 
@@ -575,68 +858,343 @@ export type DeleteStageMutationVariables = Exact<{
 
 export type DeleteStageMutation = {
   __typename?: "Mutation";
-  deleteStage: { __typename?: "Stage"; id: string; name: string; cropId: number; active?: boolean | null };
+  deleteStage: {
+    __typename?: "Stage";
+    id: string;
+    cropId: number;
+    name: string;
+    order: number;
+    createdAt: any;
+    updatedAt: any;
+  };
 };
 
-export const GetActivePlanDocument = gql`
-  query GetActivePlan {
-    activePlan {
-      crop {
-        id
-        name
-        active
-        stageCount
-      }
-      stage {
-        id
-        name
-        day
-        days
-        order
-      }
+export const CropBasicDataFragmentDoc = gql`
+  fragment CropBasicData on Crop {
+    id
+    name
+    active
+    activeSince
+    day
+  }
+`;
+export const StageBasicDataFragmentDoc = gql`
+  fragment StageBasicData on Stage {
+    id
+    cropId
+    name
+    order
+    createdAt
+    updatedAt
+  }
+`;
+export const StageDynamicDataFragmentDoc = gql`
+  fragment StageDynamicData on Stage {
+    active
+    day
+  }
+`;
+export const WeatherSettingsFragmentDoc = gql`
+  fragment WeatherSettings on Stage {
+    days
+    minTemperature
+    maxTemperature
+    minHumidity
+    maxHumidity
+    minCo2
+    maxCo2
+  }
+`;
+export const GetActivationDocument = gql`
+  query GetActivation($id: ID!) {
+    activation(id: $id) {
+      id
+      activatedBy
+      createdAt
+      activeUntil
+      enabled
+      device
+      amount
+      measureUnit
+      measureId
     }
   }
 `;
 
 /**
- * __useGetActivePlanQuery__
+ * __useGetActivationQuery__
  *
- * To run a query within a React component, call `useGetActivePlanQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetActivePlanQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useGetActivationQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetActivationQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useGetActivePlanQuery({
+ * const { data, loading, error } = useGetActivationQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useGetActivationQuery(
+  baseOptions: Apollo.QueryHookOptions<GetActivationQuery, GetActivationQueryVariables>
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<GetActivationQuery, GetActivationQueryVariables>(GetActivationDocument, options);
+}
+export function useGetActivationLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<GetActivationQuery, GetActivationQueryVariables>
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<GetActivationQuery, GetActivationQueryVariables>(GetActivationDocument, options);
+}
+export type GetActivationQueryHookResult = ReturnType<typeof useGetActivationQuery>;
+export type GetActivationLazyQueryHookResult = ReturnType<typeof useGetActivationLazyQuery>;
+export type GetActivationQueryResult = Apollo.QueryResult<GetActivationQuery, GetActivationQueryVariables>;
+export const GetActivationsDocument = gql`
+  query GetActivations($device: Device) {
+    activations(device: $device) {
+      id
+      activatedBy
+      createdAt
+      activeUntil
+      enabled
+      device
+      amount
+      measureUnit
+      measureId
+    }
+  }
+`;
+
+/**
+ * __useGetActivationsQuery__
+ *
+ * To run a query within a React component, call `useGetActivationsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetActivationsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetActivationsQuery({
+ *   variables: {
+ *      device: // value for 'device'
+ *   },
+ * });
+ */
+export function useGetActivationsQuery(
+  baseOptions?: Apollo.QueryHookOptions<GetActivationsQuery, GetActivationsQueryVariables>
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<GetActivationsQuery, GetActivationsQueryVariables>(GetActivationsDocument, options);
+}
+export function useGetActivationsLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<GetActivationsQuery, GetActivationsQueryVariables>
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<GetActivationsQuery, GetActivationsQueryVariables>(GetActivationsDocument, options);
+}
+export type GetActivationsQueryHookResult = ReturnType<typeof useGetActivationsQuery>;
+export type GetActivationsLazyQueryHookResult = ReturnType<typeof useGetActivationsLazyQuery>;
+export type GetActivationsQueryResult = Apollo.QueryResult<GetActivationsQuery, GetActivationsQueryVariables>;
+export const GetEnabledDevicesDocument = gql`
+  query GetEnabledDevices {
+    enabledDevices {
+      id
+      device
+    }
+  }
+`;
+
+/**
+ * __useGetEnabledDevicesQuery__
+ *
+ * To run a query within a React component, call `useGetEnabledDevicesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetEnabledDevicesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetEnabledDevicesQuery({
  *   variables: {
  *   },
  * });
  */
-export function useGetActivePlanQuery(
-  baseOptions?: Apollo.QueryHookOptions<GetActivePlanQuery, GetActivePlanQueryVariables>
+export function useGetEnabledDevicesQuery(
+  baseOptions?: Apollo.QueryHookOptions<GetEnabledDevicesQuery, GetEnabledDevicesQueryVariables>
 ) {
   const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useQuery<GetActivePlanQuery, GetActivePlanQueryVariables>(GetActivePlanDocument, options);
+  return Apollo.useQuery<GetEnabledDevicesQuery, GetEnabledDevicesQueryVariables>(GetEnabledDevicesDocument, options);
 }
-export function useGetActivePlanLazyQuery(
-  baseOptions?: Apollo.LazyQueryHookOptions<GetActivePlanQuery, GetActivePlanQueryVariables>
+export function useGetEnabledDevicesLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<GetEnabledDevicesQuery, GetEnabledDevicesQueryVariables>
 ) {
   const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useLazyQuery<GetActivePlanQuery, GetActivePlanQueryVariables>(GetActivePlanDocument, options);
+  return Apollo.useLazyQuery<GetEnabledDevicesQuery, GetEnabledDevicesQueryVariables>(
+    GetEnabledDevicesDocument,
+    options
+  );
 }
-export type GetActivePlanQueryHookResult = ReturnType<typeof useGetActivePlanQuery>;
-export type GetActivePlanLazyQueryHookResult = ReturnType<typeof useGetActivePlanLazyQuery>;
-export type GetActivePlanQueryResult = Apollo.QueryResult<GetActivePlanQuery, GetActivePlanQueryVariables>;
+export type GetEnabledDevicesQueryHookResult = ReturnType<typeof useGetEnabledDevicesQuery>;
+export type GetEnabledDevicesLazyQueryHookResult = ReturnType<typeof useGetEnabledDevicesLazyQuery>;
+export type GetEnabledDevicesQueryResult = Apollo.QueryResult<GetEnabledDevicesQuery, GetEnabledDevicesQueryVariables>;
+export const ActivateDeviceDocument = gql`
+  mutation ActivateDevice($device: Device!, $amount: Float!) {
+    activateDevice(device: $device, amount: $amount) {
+      id
+      activatedBy
+      createdAt
+      activeUntil
+      enabled
+      device
+      amount
+      measureUnit
+      measureId
+    }
+  }
+`;
+export type ActivateDeviceMutationFn = Apollo.MutationFunction<ActivateDeviceMutation, ActivateDeviceMutationVariables>;
+
+/**
+ * __useActivateDeviceMutation__
+ *
+ * To run a mutation, you first call `useActivateDeviceMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useActivateDeviceMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [activateDeviceMutation, { data, loading, error }] = useActivateDeviceMutation({
+ *   variables: {
+ *      device: // value for 'device'
+ *      amount: // value for 'amount'
+ *   },
+ * });
+ */
+export function useActivateDeviceMutation(
+  baseOptions?: Apollo.MutationHookOptions<ActivateDeviceMutation, ActivateDeviceMutationVariables>
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<ActivateDeviceMutation, ActivateDeviceMutationVariables>(ActivateDeviceDocument, options);
+}
+export type ActivateDeviceMutationHookResult = ReturnType<typeof useActivateDeviceMutation>;
+export type ActivateDeviceMutationResult = Apollo.MutationResult<ActivateDeviceMutation>;
+export type ActivateDeviceMutationOptions = Apollo.BaseMutationOptions<
+  ActivateDeviceMutation,
+  ActivateDeviceMutationVariables
+>;
+export const DeactivateDeviceDocument = gql`
+  mutation deactivateDevice($device: Device!) {
+    deactivateDevice(device: $device)
+  }
+`;
+export type DeactivateDeviceMutationFn = Apollo.MutationFunction<
+  DeactivateDeviceMutation,
+  DeactivateDeviceMutationVariables
+>;
+
+/**
+ * __useDeactivateDeviceMutation__
+ *
+ * To run a mutation, you first call `useDeactivateDeviceMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeactivateDeviceMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deactivateDeviceMutation, { data, loading, error }] = useDeactivateDeviceMutation({
+ *   variables: {
+ *      device: // value for 'device'
+ *   },
+ * });
+ */
+export function useDeactivateDeviceMutation(
+  baseOptions?: Apollo.MutationHookOptions<DeactivateDeviceMutation, DeactivateDeviceMutationVariables>
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<DeactivateDeviceMutation, DeactivateDeviceMutationVariables>(
+    DeactivateDeviceDocument,
+    options
+  );
+}
+export type DeactivateDeviceMutationHookResult = ReturnType<typeof useDeactivateDeviceMutation>;
+export type DeactivateDeviceMutationResult = Apollo.MutationResult<DeactivateDeviceMutation>;
+export type DeactivateDeviceMutationOptions = Apollo.BaseMutationOptions<
+  DeactivateDeviceMutation,
+  DeactivateDeviceMutationVariables
+>;
+export const GetActiveCropDocument = gql`
+  query GetActiveCrop {
+    activeCrop {
+      ...CropBasicData
+      days
+      stageCount
+      activeStage {
+        id
+        name
+        order
+        day
+        days
+        minTemperature
+        maxTemperature
+        minHumidity
+        maxHumidity
+        minCo2
+        maxCo2
+        lightHours
+        irrigation
+      }
+    }
+  }
+  ${CropBasicDataFragmentDoc}
+`;
+
+/**
+ * __useGetActiveCropQuery__
+ *
+ * To run a query within a React component, call `useGetActiveCropQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetActiveCropQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetActiveCropQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetActiveCropQuery(
+  baseOptions?: Apollo.QueryHookOptions<GetActiveCropQuery, GetActiveCropQueryVariables>
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<GetActiveCropQuery, GetActiveCropQueryVariables>(GetActiveCropDocument, options);
+}
+export function useGetActiveCropLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<GetActiveCropQuery, GetActiveCropQueryVariables>
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<GetActiveCropQuery, GetActiveCropQueryVariables>(GetActiveCropDocument, options);
+}
+export type GetActiveCropQueryHookResult = ReturnType<typeof useGetActiveCropQuery>;
+export type GetActiveCropLazyQueryHookResult = ReturnType<typeof useGetActiveCropLazyQuery>;
+export type GetActiveCropQueryResult = Apollo.QueryResult<GetActiveCropQuery, GetActiveCropQueryVariables>;
 export const GetCropsDocument = gql`
   query GetCrops {
     crops {
-      id
-      name
-      active
+      ...CropBasicData
+      days
       stageCount
     }
   }
+  ${CropBasicDataFragmentDoc}
 `;
 
 /**
@@ -665,14 +1223,87 @@ export function useGetCropsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<G
 export type GetCropsQueryHookResult = ReturnType<typeof useGetCropsQuery>;
 export type GetCropsLazyQueryHookResult = ReturnType<typeof useGetCropsLazyQuery>;
 export type GetCropsQueryResult = Apollo.QueryResult<GetCropsQuery, GetCropsQueryVariables>;
+export const ActivateCropDocument = gql`
+  mutation ActivateCrop($id: ID!) {
+    activateCrop(id: $id) {
+      ...CropBasicData
+    }
+  }
+  ${CropBasicDataFragmentDoc}
+`;
+export type ActivateCropMutationFn = Apollo.MutationFunction<ActivateCropMutation, ActivateCropMutationVariables>;
+
+/**
+ * __useActivateCropMutation__
+ *
+ * To run a mutation, you first call `useActivateCropMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useActivateCropMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [activateCropMutation, { data, loading, error }] = useActivateCropMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useActivateCropMutation(
+  baseOptions?: Apollo.MutationHookOptions<ActivateCropMutation, ActivateCropMutationVariables>
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<ActivateCropMutation, ActivateCropMutationVariables>(ActivateCropDocument, options);
+}
+export type ActivateCropMutationHookResult = ReturnType<typeof useActivateCropMutation>;
+export type ActivateCropMutationResult = Apollo.MutationResult<ActivateCropMutation>;
+export type ActivateCropMutationOptions = Apollo.BaseMutationOptions<
+  ActivateCropMutation,
+  ActivateCropMutationVariables
+>;
+export const DeactivateCropDocument = gql`
+  mutation DeactivateCrop {
+    deactivateCrop
+  }
+`;
+export type DeactivateCropMutationFn = Apollo.MutationFunction<DeactivateCropMutation, DeactivateCropMutationVariables>;
+
+/**
+ * __useDeactivateCropMutation__
+ *
+ * To run a mutation, you first call `useDeactivateCropMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeactivateCropMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deactivateCropMutation, { data, loading, error }] = useDeactivateCropMutation({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useDeactivateCropMutation(
+  baseOptions?: Apollo.MutationHookOptions<DeactivateCropMutation, DeactivateCropMutationVariables>
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<DeactivateCropMutation, DeactivateCropMutationVariables>(DeactivateCropDocument, options);
+}
+export type DeactivateCropMutationHookResult = ReturnType<typeof useDeactivateCropMutation>;
+export type DeactivateCropMutationResult = Apollo.MutationResult<DeactivateCropMutation>;
+export type DeactivateCropMutationOptions = Apollo.BaseMutationOptions<
+  DeactivateCropMutation,
+  DeactivateCropMutationVariables
+>;
 export const CreateOrUpdateCropDocument = gql`
   mutation CreateOrUpdateCrop($data: CropInput!) {
     upsertCrop(data: $data) {
-      id
-      name
-      active
+      ...CropBasicData
     }
   }
+  ${CropBasicDataFragmentDoc}
 `;
 export type CreateOrUpdateCropMutationFn = Apollo.MutationFunction<
   CreateOrUpdateCropMutation,
@@ -714,11 +1345,10 @@ export type CreateOrUpdateCropMutationOptions = Apollo.BaseMutationOptions<
 export const DeleteCropDocument = gql`
   mutation DeleteCrop($id: ID!) {
     deleteCrop(id: $id) {
-      id
-      name
-      active
+      ...CropBasicData
     }
   }
+  ${CropBasicDataFragmentDoc}
 `;
 export type DeleteCropMutationFn = Apollo.MutationFunction<DeleteCropMutation, DeleteCropMutationVariables>;
 
@@ -748,33 +1378,115 @@ export function useDeleteCropMutation(
 export type DeleteCropMutationHookResult = ReturnType<typeof useDeleteCropMutation>;
 export type DeleteCropMutationResult = Apollo.MutationResult<DeleteCropMutation>;
 export type DeleteCropMutationOptions = Apollo.BaseMutationOptions<DeleteCropMutation, DeleteCropMutationVariables>;
+export const GetLastMeasureDocument = gql`
+  query GetLastMeasure {
+    lastMeasure {
+      id
+      createdAt
+      consumption
+      insideTemperature
+      outsideTemperature
+      insideHumidity
+      outsideHumidity
+      soilHumidity
+      co2
+      lighting
+    }
+  }
+`;
+
+/**
+ * __useGetLastMeasureQuery__
+ *
+ * To run a query within a React component, call `useGetLastMeasureQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetLastMeasureQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetLastMeasureQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetLastMeasureQuery(
+  baseOptions?: Apollo.QueryHookOptions<GetLastMeasureQuery, GetLastMeasureQueryVariables>
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<GetLastMeasureQuery, GetLastMeasureQueryVariables>(GetLastMeasureDocument, options);
+}
+export function useGetLastMeasureLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<GetLastMeasureQuery, GetLastMeasureQueryVariables>
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<GetLastMeasureQuery, GetLastMeasureQueryVariables>(GetLastMeasureDocument, options);
+}
+export type GetLastMeasureQueryHookResult = ReturnType<typeof useGetLastMeasureQuery>;
+export type GetLastMeasureLazyQueryHookResult = ReturnType<typeof useGetLastMeasureLazyQuery>;
+export type GetLastMeasureQueryResult = Apollo.QueryResult<GetLastMeasureQuery, GetLastMeasureQueryVariables>;
+export const GetLastMeasuresDocument = gql`
+  query GetLastMeasures {
+    lastMeasures {
+      id
+      createdAt
+      consumption
+      insideTemperature
+      outsideTemperature
+      insideHumidity
+      outsideHumidity
+      soilHumidity
+      co2
+      lighting
+    }
+  }
+`;
+
+/**
+ * __useGetLastMeasuresQuery__
+ *
+ * To run a query within a React component, call `useGetLastMeasuresQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetLastMeasuresQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetLastMeasuresQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetLastMeasuresQuery(
+  baseOptions?: Apollo.QueryHookOptions<GetLastMeasuresQuery, GetLastMeasuresQueryVariables>
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<GetLastMeasuresQuery, GetLastMeasuresQueryVariables>(GetLastMeasuresDocument, options);
+}
+export function useGetLastMeasuresLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<GetLastMeasuresQuery, GetLastMeasuresQueryVariables>
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<GetLastMeasuresQuery, GetLastMeasuresQueryVariables>(GetLastMeasuresDocument, options);
+}
+export type GetLastMeasuresQueryHookResult = ReturnType<typeof useGetLastMeasuresQuery>;
+export type GetLastMeasuresLazyQueryHookResult = ReturnType<typeof useGetLastMeasuresLazyQuery>;
+export type GetLastMeasuresQueryResult = Apollo.QueryResult<GetLastMeasuresQuery, GetLastMeasuresQueryVariables>;
 export const GetStageDocument = gql`
   query GetStage($id: ID!) {
     stage(id: $id) {
-      id
-      cropId
+      ...StageBasicData
+      ...StageDynamicData
+      ...WeatherSettings
       crop {
-        id
-        name
-        active
+        ...CropBasicData
       }
-      name
-      active
-      day
-      order
-      days
-      minTemperature
-      maxTemperature
-      minHumidity
-      maxHumidity
-      minCo2
-      maxCo2
-      lightHours
-      irrigation
-      createdAt
-      updatedAt
     }
   }
+  ${StageBasicDataFragmentDoc}
+  ${StageDynamicDataFragmentDoc}
+  ${WeatherSettingsFragmentDoc}
+  ${CropBasicDataFragmentDoc}
 `;
 
 /**
@@ -807,25 +1519,18 @@ export type GetStageQueryResult = Apollo.QueryResult<GetStageQuery, GetStageQuer
 export const GetStagesDocument = gql`
   query GetStages($cropId: ID!) {
     stages(cropId: $cropId) {
-      id
-      cropId
-      name
-      active
-      day
-      order
-      days
-      minTemperature
-      maxTemperature
-      minHumidity
-      maxHumidity
-      minCo2
-      maxCo2
-      lightHours
-      irrigation
-      createdAt
-      updatedAt
+      ...StageBasicData
+      ...StageDynamicData
+      ...WeatherSettings
+      crop {
+        ...CropBasicData
+      }
     }
   }
+  ${StageBasicDataFragmentDoc}
+  ${StageDynamicDataFragmentDoc}
+  ${WeatherSettingsFragmentDoc}
+  ${CropBasicDataFragmentDoc}
 `;
 
 /**
@@ -860,25 +1565,14 @@ export type GetStagesQueryResult = Apollo.QueryResult<GetStagesQuery, GetStagesQ
 export const CreateOrUpdateStageDocument = gql`
   mutation CreateOrUpdateStage($data: StageInput!) {
     upsertStage(data: $data) {
-      id
-      cropId
-      name
-      active
-      day
-      order
-      days
-      minTemperature
-      maxTemperature
-      minHumidity
-      maxHumidity
-      minCo2
-      maxCo2
-      lightHours
-      irrigation
-      createdAt
-      updatedAt
+      ...StageBasicData
+      ...StageDynamicData
+      ...WeatherSettings
     }
   }
+  ${StageBasicDataFragmentDoc}
+  ${StageDynamicDataFragmentDoc}
+  ${WeatherSettingsFragmentDoc}
 `;
 export type CreateOrUpdateStageMutationFn = Apollo.MutationFunction<
   CreateOrUpdateStageMutation,
@@ -920,12 +1614,10 @@ export type CreateOrUpdateStageMutationOptions = Apollo.BaseMutationOptions<
 export const DeleteStageDocument = gql`
   mutation DeleteStage($id: ID!) {
     deleteStage(id: $id) {
-      id
-      name
-      cropId
-      active
+      ...StageBasicData
     }
   }
+  ${StageBasicDataFragmentDoc}
 `;
 export type DeleteStageMutationFn = Apollo.MutationFunction<DeleteStageMutation, DeleteStageMutationVariables>;
 

@@ -3,6 +3,7 @@ import { StyleSheet } from "react-native";
 
 import { Control } from "../pages/Dashboard";
 import { ControlIcon } from "./ControlIcon";
+import { getDeviceName } from "../utils/helpers";
 
 const styles = StyleSheet.create({
   label: { fontSize: 16 },
@@ -14,7 +15,7 @@ export const ControlIndicator = ({ control, onPress }: { control: Control; onPre
   <Pressable onPress={() => onPress(control)}>
     <VStack items="center">
       <ControlIcon type={control.type} extraStyles={styles.icon} />
-      <Text style={styles.label}>{control.name}</Text>
+      <Text style={styles.label}>{getDeviceName(control.type)}</Text>
       <Text style={styles.value}>{control.active ? "ON" : "OFF"}</Text>
     </VStack>
   </Pressable>

@@ -25,6 +25,7 @@ export const Input = <T extends FieldValues>({
       value={field.value.toString()}
       onChange={() => {}}
       onChangeText={(value) => field.onChange(type === "number" ? Number(value) : value)}
+      color={fieldState.error ? "error" : "primary"}
       helperText={fieldState.error?.message}
       style={{ marginRight: 12 }}
       {...rest}

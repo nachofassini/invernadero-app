@@ -8,8 +8,8 @@ import { useLayoutEffect, useState } from "react";
 import { CropFormModal } from "../components/CropFormModal";
 import { CropInput, useGetCropsQuery } from "../gql";
 import { CropsNavigation, CropsScreenProps, EditStageScreenProps, StagesScreenProps } from "../types/navigation";
-import { RefreshControl, ScrollView } from "react-native";
 import { Snackbar } from "../components/Snackbar";
+import { ScrollableView } from "../components/ScrollableView";
 
 const Stack = createNativeStackNavigator<CropsNavigation>();
 
@@ -17,7 +17,7 @@ const CropList = () => {
   const { navigate, getParent } = useNavigation<CropsScreenProps["navigation"]>();
   const isFocused = useIsFocused();
 
-  const { data: { crops } = {}, loading, error, refetch, networkStatus } = useGetCropsQuery();
+  const { data: { crops } = {}, loading, error, refetch } = useGetCropsQuery();
 
   const [showCropForm, setShowCropForm] = useState<CropInput | null>();
   const handleCloseCropForm = () => setShowCropForm(null);
@@ -41,19 +41,13 @@ const CropList = () => {
 
   return (
     <>
-      <ScrollView refreshControl={<RefreshControl refreshing={loading} onRefresh={refetch} />}>
+      <ScrollableView loading={loading} onRefresh={refetch}>
         {error && !loading && <Snackbar type="error" message="Upss. Ocurrió un error cargando los cultivos." />}
         {crops?.length === 0 ? (
           <Snackbar
             message="No se registró ningun cultivo todavia."
-            action={
-              <Button
-                title="¡Agregá un cultivo!"
-                color="secondary"
-                onPress={() => setShowCropForm({ name: "" })}
-                compact
-              />
-            }
+            actionTitle="¡Agregá un cultivo!"
+            onPress={() => setShowCropForm({ name: "" })}
           />
         ) : (
           crops?.map((crop) => (
@@ -67,7 +61,7 @@ const CropList = () => {
             />
           ))
         )}
-      </ScrollView>
+      </ScrollableView>
       {!!showCropForm && <CropFormModal defaultValues={showCropForm} onDismiss={handleCloseCropForm} />}
     </>
   );

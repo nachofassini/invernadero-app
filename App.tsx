@@ -6,6 +6,7 @@ import { SafeAreaView, StyleSheet } from "react-native";
 import { Provider as ThemeProvider } from "@react-native-material/core";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Icon from "@expo/vector-icons/MaterialCommunityIcons";
+import Constants from "expo-constants";
 
 import { colors, theme } from "./constants";
 import Dashboard from "./pages/Dashboard";
@@ -15,30 +16,27 @@ import { RootTabParamList } from "./types/navigation";
 
 const Tab = createBottomTabNavigator<RootTabParamList>();
 
-const appLink = new HttpLink({
-  // uri: "http://localhost:8000/graphl",
-  uri: "https://6047-186-139-123-218.sa.ngrok.io/graphql",
-});
-
-const errorLink = onError(({ graphQLErrors, networkError, operation, forward }: ErrorResponse) => {
-  if (graphQLErrors) {
-    for (let error of graphQLErrors) {
-      const { message } = error;
-      console.log("gql error message", message);
-    }
-  }
-
-  if (networkError) {
-    console.log("network error message", networkError.message);
-  }
-});
-
-const client = new ApolloClient({
-  link: from([errorLink, appLink]),
-  cache: new InMemoryCache(),
-});
-
 export default function App() {
+  const appLink = new HttpLink({ uri: Constants.expoConfig?.extra?.apiUrl });
+
+  const errorLink = onError(({ graphQLErrors, networkError, operation, forward }: ErrorResponse) => {
+    if (graphQLErrors) {
+      for (let error of graphQLErrors) {
+        const { message } = error;
+        console.log("gql error message", message);
+      }
+    }
+
+    if (networkError) {
+      console.log("network error message", networkError.message);
+    }
+  });
+
+  const client = new ApolloClient({
+    link: from([errorLink, appLink]),
+    cache: new InMemoryCache(),
+  });
+
   return (
     <ApolloProvider client={client}>
       <NavigationContainer>
@@ -46,11 +44,11 @@ export default function App() {
         <ThemeProvider theme={theme}>
           <SafeAreaView style={[styles.container, styles.bgSetup]}>
             <StatusBar style="auto" />
-            <Tab.Navigator initialRouteName="Crops">
+            <Tab.Navigator initialRouteName="Home">
               <Tab.Screen
                 name="Home"
                 component={Dashboard}
-                options={{ tabBarIcon: (props) => <Icon name="home" {...props} />, title: "" }}
+                options={{ tabBarIcon: (props) => <Icon name="home" {...props} />, title: "Centro de control" }}
               />
               <Tab.Screen
                 name="Crops"
@@ -64,7 +62,7 @@ export default function App() {
               <Tab.Screen
                 name="Reports"
                 component={Reports}
-                options={{ tabBarIcon: (props) => <Icon name="chart-line" {...props} /> }}
+                options={{ tabBarIcon: (props) => <Icon name="chart-line" {...props} />, title: "Reportes" }}
               />
             </Tab.Navigator>
           </SafeAreaView>

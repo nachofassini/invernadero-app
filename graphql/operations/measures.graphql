@@ -1,0 +1,29 @@
+query GetLastMeasure {
+  lastMeasure {
+    id
+    createdAt
+    consumption
+    insideTemperature
+    outsideTemperature
+    insideHumidity
+    outsideHumidity
+    soilHumidity
+    co2
+    lighting
+  }
+}
+
+query GetLastMeasures {
+  lastMeasures {
+    id
+    createdAt
+    consumption
+    insideTemperature
+    outsideTemperature
+    insideHumidity
+    outsideHumidity
+    soilHumidity
+    co2
+    lighting
+  }
+}
