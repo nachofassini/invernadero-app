@@ -7,7 +7,7 @@ import { useGetStagesQuery } from "../gql";
 import { Snackbar } from "../components/Snackbar";
 import { ScrollableView } from "../components/ScrollableView";
 
-const Stages = () => {
+export const Stages = () => {
   const { setOptions, navigate } = useNavigation<StagesScreenProps["navigation"]>();
   const {
     params: { id: cropId, name: cropName },
@@ -43,5 +43,3 @@ const Stages = () => {
     </ScrollableView>
   );
 };
-
-export default Stages;

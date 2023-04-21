@@ -3,9 +3,12 @@ import { GraphQLError } from "graphql";
 import _ from "lodash";
 import moment from "moment";
 import { FieldValues, Path, UseFormSetError } from "react-hook-form";
+import Icon from "@expo/vector-icons/MaterialCommunityIcons";
+import { HStack, Text } from "@react-native-material/core";
+
 import { MeasureUnit as SensorMeasureUnit } from "../pages/Dashboard";
-import { Device, MeasureUnit, SensorType } from "../gql";
-import { useMemo } from "react";
+import { ActivationType, Device, MeasureUnit, SensorType } from "../gql";
+import { ReactNode, useMemo } from "react";
 
 interface ValidationError<T> extends FieldValues {
   [field: string]: string[];
@@ -83,6 +86,95 @@ export const getDeviceUnit = (device: Device): MeasureUnit => {
     case Device.Extractor:
       return MeasureUnit.Mins;
   }
+};
+
+export const getDeviceActivationByDescription = (type?: ActivationType | null): string => {
+  switch (type) {
+    case ActivationType.HighCo2:
+      return "Alto Co2";
+    case ActivationType.HighHumidity:
+      return "Alta humedad";
+    case ActivationType.HighSoilHumidity:
+      return "Alta humedad de Suelo";
+    case ActivationType.HighTemp:
+      return "Alta temperatura";
+    case ActivationType.LowCo2:
+      return "Bajo Co2";
+    case ActivationType.LowHumidity:
+      return "Baja humedad";
+    case ActivationType.LowLighting:
+      return "Baja iluminación";
+    case ActivationType.LowSoilHumidity:
+      return "Baja humedad de suelo";
+    case ActivationType.LowTemp:
+      return "Baja temperatura";
+    case ActivationType.Manual:
+      return "Manual";
+    default:
+      return "";
+  }
+};
+
+export const getDeviceActivationByDescriptionWithIcon = (type?: ActivationType | null): ReactNode => {
+  let icon: "manual" | "up" | "down" | null = null;
+  let measure: "Co2" | "Hum." | "H. suelo" | "Temp." | "Luz" | "Manual" = "Manual";
+
+  switch (type) {
+    case ActivationType.HighCo2:
+    case ActivationType.HighHumidity:
+    case ActivationType.HighSoilHumidity:
+    case ActivationType.HighTemp:
+    case ActivationType.LowCo2:
+      icon = "up";
+      break;
+    case ActivationType.LowHumidity:
+    case ActivationType.LowLighting:
+    case ActivationType.LowSoilHumidity:
+    case ActivationType.LowTemp:
+      icon = "down";
+      break;
+    case ActivationType.Manual:
+      icon = "manual";
+      break;
+  }
+
+  switch (type) {
+    case ActivationType.HighCo2:
+    case ActivationType.LowCo2:
+      measure = "Co2";
+      break;
+    case ActivationType.HighHumidity:
+      measure = "Hum.";
+      break;
+    case ActivationType.HighTemp:
+    case ActivationType.LowTemp:
+      measure = "Temp.";
+      break;
+    case ActivationType.HighSoilHumidity:
+    case ActivationType.LowSoilHumidity:
+      measure = "H. suelo";
+      break;
+    case ActivationType.LowLighting:
+      measure = "Luz";
+      break;
+  }
+
+  if (!icon) return null;
+
+  return (
+    <HStack spacing={10} items="center">
+      {icon === "up" ? (
+        <>
+          <Icon style={{ fontSize: 18 }} name="arrow-up" color="#f57b65" />
+        </>
+      ) : icon === "down" ? (
+        <Icon style={{ fontSize: 18 }} name="arrow-down" color="#5eb5c7" />
+      ) : (
+        <Icon style={{ fontSize: 18 }} name="hand-back-right-outline" />
+      )}
+      <Text>{measure}</Text>
+    </HStack>
+  );
 };
 
 export const useDeviceActivationOptions = (device: Device): { label: string; value: number }[] => {

@@ -1,4 +1,8 @@
 import { colors } from "./colors";
 import { theme } from "./theme";
 
-export { colors, theme };
+const common = {
+  ITEMS_PER_PAGE: 50,
+};
+
+export { colors, theme, common };

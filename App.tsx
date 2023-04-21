@@ -1,25 +1,23 @@
 import { ApolloClient, HttpLink, InMemoryCache, ApolloProvider, from } from "@apollo/client";
 import { ErrorResponse, onError } from "@apollo/client/link/error";
-import { StatusBar } from "expo-status-bar";
-import { NavigationContainer } from "@react-navigation/native";
-import { SafeAreaView, StyleSheet } from "react-native";
 import { Provider as ThemeProvider } from "@react-native-material/core";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import Icon from "@expo/vector-icons/MaterialCommunityIcons";
+import { NavigationContainer } from "@react-navigation/native";
+import { StatusBar } from "expo-status-bar";
 import Constants from "expo-constants";
+import { SafeAreaView, StyleSheet } from "react-native";
 
 import { colors, theme } from "./constants";
-import Dashboard from "./pages/Dashboard";
-import Crops from "./pages/Crops";
-import Reports from "./pages/Reports";
-import { RootTabParamList } from "./types/navigation";
+import { MainNavigator } from "./navigation/MainNavigator";
 
-const Tab = createBottomTabNavigator<RootTabParamList>();
+const styles = StyleSheet.create({
+  container: { minHeight: "100%" },
+  bgSetup: { backgroundColor: colors.mainBg },
+});
 
 export default function App() {
   const appLink = new HttpLink({ uri: Constants.expoConfig?.extra?.apiUrl });
 
-  const errorLink = onError(({ graphQLErrors, networkError, operation, forward }: ErrorResponse) => {
+  const errorLink = onError(({ graphQLErrors, networkError, forward }: ErrorResponse) => {
     if (graphQLErrors) {
       for (let error of graphQLErrors) {
         const { message } = error;
@@ -44,35 +42,10 @@ export default function App() {
         <ThemeProvider theme={theme}>
           <SafeAreaView style={[styles.container, styles.bgSetup]}>
             <StatusBar style="auto" />
-            <Tab.Navigator initialRouteName="Home">
-              <Tab.Screen
-                name="Home"
-                component={Dashboard}
-                options={{ tabBarIcon: (props) => <Icon name="home" {...props} />, title: "Centro de control" }}
-              />
-              <Tab.Screen
-                name="Crops"
-                component={Crops}
-                options={{
-                  tabBarIcon: (props) => <Icon name="cog" {...props} />,
-                  title: "Cultivos",
-                  headerShown: true,
-                }}
-              />
-              <Tab.Screen
-                name="Reports"
-                component={Reports}
-                options={{ tabBarIcon: (props) => <Icon name="chart-line" {...props} />, title: "Reportes" }}
-              />
-            </Tab.Navigator>
+            <MainNavigator />
           </SafeAreaView>
         </ThemeProvider>
       </NavigationContainer>
     </ApolloProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { minHeight: "100%" },
-  bgSetup: { backgroundColor: colors.mainBg },
-});

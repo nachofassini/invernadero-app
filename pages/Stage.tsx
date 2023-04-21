@@ -16,7 +16,7 @@ import { Spinner } from "../components/Spinner";
 
 type NavProps = NewStageScreenProps | EditStageScreenProps;
 
-const Stage = () => {
+export const Stage = () => {
   const { goBack } = useNavigation<NavProps["navigation"]>();
   const { name, params } = useRoute<NavProps["route"]>();
 
@@ -69,5 +69,3 @@ const Stage = () => {
     </ScrollView>
   );
 };
-
-export default Stage;

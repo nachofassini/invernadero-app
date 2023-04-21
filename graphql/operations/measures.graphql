@@ -1,7 +1,33 @@
+fragment PaginatorFields on PaginatorInfo {
+  count
+  currentPage
+  firstItem
+  hasMorePages
+  lastItem
+  lastPage
+  perPage
+  total
+}
+
+fragment MeasureData on Measure {
+  id
+  createdAt
+  updatedAt
+  consumption
+  insideTemperature
+  outsideTemperature
+  insideHumidity
+  outsideHumidity
+  soilHumidity
+  co2
+  lighting
+}
+
 query GetLastMeasure {
   lastMeasure {
     id
     createdAt
+    updatedAt
     consumption
     insideTemperature
     outsideTemperature
@@ -13,11 +39,36 @@ query GetLastMeasure {
   }
 }
 
-query GetLastMeasures {
-  lastMeasures {
+query GetLastMeasures($limit: Int, $offset: Int) {
+  lastMeasures(limit: $limit, offset: $offset) {
     id
     createdAt
+    updatedAt
     consumption
+    insideTemperature
+    outsideTemperature
+    insideHumidity
+    outsideHumidity
+    soilHumidity
+    co2
+    lighting
+  }
+}
+
+query GetLastMeasuresPaginated($first: Int!, $page: Int) {
+  lastMeasuresPaginated(first: $first, page: $page) {
+    paginatorInfo {
+      ...PaginatorFields
+    }
+    data {
+      ...MeasureData
+    }
+  }
+}
+
+query GetMeasuresAverageGroupedByDay($range: DateRange!) {
+  measuresAverageGroupedByDay(createdAt: $range) {
+    date
     insideTemperature
     outsideTemperature
     insideHumidity

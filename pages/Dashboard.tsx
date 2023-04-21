@@ -1,5 +1,5 @@
 import { ActivityIndicator, HStack, IconButton, Surface, Text, VStack } from "@react-native-material/core";
-import { StyleSheet, View, ScrollView, Pressable } from "react-native";
+import { StyleSheet, View, Pressable } from "react-native";
 import Icon from "@expo/vector-icons/MaterialCommunityIcons";
 import { useEffect, useMemo, useState } from "react";
 import { PlanModal } from "../components/PlanModal";
@@ -19,6 +19,7 @@ import {
 } from "../gql";
 import { HomeNavProps } from "../types/navigation";
 import { Spinner } from "../components/Spinner";
+import { ScrollableView } from "../components/ScrollableView";
 
 export type MeasureUnit = "%" | "ºC" | "ppm" | "mm3" | "Hs";
 
@@ -41,7 +42,7 @@ export const getPlanTitle = (crop: {
   activeStage?: { order?: number } | null;
 }): string => `${crop.name} | Etapa: ${crop.activeStage?.order}/${crop.stageCount} | Dia ${crop.day}/${crop.days}`;
 
-const Dashboard = () => {
+export const Dashboard = () => {
   const { setOptions } = useNavigation<HomeNavProps>();
   const [showPlanModal, setShowPlanModal] = useState(false);
   const [showChangePlanModal, setShowChangePlanModal] = useState(false);
@@ -52,7 +53,7 @@ const Dashboard = () => {
   const toggleShowChangePlanModal = () => setShowChangePlanModal((prevVal) => !prevVal);
 
   const { data: { activeCrop } = {} } = useGetActiveCropQuery();
-  const { data: { lastMeasure } = {}, loading: refreshing } = useGetLastMeasureQuery({ pollInterval: 10000 });
+  const { data: { lastMeasure } = {}, loading: refreshing, refetch } = useGetLastMeasureQuery({ pollInterval: 10000 });
   const { data: { enabledDevices } = {} } = useGetEnabledDevicesQuery({ pollInterval: 10000 });
 
   useEffect(() => {
@@ -111,8 +112,8 @@ const Dashboard = () => {
     return enabledDevices
       ? [
           { type: Device.Fan, active: activeDevices.includes(Device.Fan) },
-          { type: Device.Irrigation, active: activeDevices.includes(Device.Irrigation) },
           { type: Device.Light, active: activeDevices.includes(Device.Light) },
+          { type: Device.Irrigation, active: activeDevices.includes(Device.Irrigation) },
           { type: Device.Extractor, active: activeDevices.includes(Device.Extractor) },
         ]
       : [];
@@ -122,7 +123,7 @@ const Dashboard = () => {
 
   return (
     <>
-      <ScrollView>
+      <ScrollableView loading={refreshing} onRefresh={refetch}>
         <VStack justify="between" style={{ minHeight: "100%" }}>
           <Surface style={{ padding: 5, margin: 5 }} elevation={2}>
             <Text variant="h5" style={{ textAlign: "center" }}>
@@ -195,7 +196,7 @@ const Dashboard = () => {
             </HStack>
           </Surface>
         </VStack>
-      </ScrollView>
+      </ScrollableView>
       {selectedSensor && <SensorModal sensor={selectedSensor} onDismiss={() => setSelectedSensor(null)} />}
       {selectedControl && <ControlModal control={selectedControl} onDismiss={() => setSelectedControl(null)} />}
       {activeCrop && showPlanModal && <PlanModal crop={activeCrop} onDismiss={toggleShowPlanModal} />}
@@ -211,5 +212,3 @@ const styles = StyleSheet.create({
 
   greenHouseWrapper: {},
 });
-
-export default Dashboard;

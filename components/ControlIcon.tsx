@@ -11,13 +11,13 @@ const styles = StyleSheet.create({
 export const ControlIcon = ({ type, extraStyles }: { type: Device; extraStyles?: {} }) => {
   switch (type) {
     case Device.Fan:
-      return <Icon name="fan-plus" style={{ ...styles.icon, ...extraStyles }} />;
+      return <Icon name="fan-plus" color="#4fdeee" style={{ ...styles.icon, ...extraStyles }} />;
     case Device.Irrigation:
-      return <Icon name="watering-can" style={{ ...styles.icon, ...extraStyles }} />;
+      return <Icon name="watering-can" color="#5eb5c7" style={{ ...styles.icon, ...extraStyles }} />;
     case Device.Light:
-      return <FoIcon name="lightbulb" style={{ ...styles.icon, ...extraStyles }} />;
+      return <FoIcon name="lightbulb" color="#f57b65" style={{ ...styles.icon, ...extraStyles }} />;
     case Device.Extractor:
-      return <Icon name="fan-minus" style={{ ...styles.icon, ...extraStyles }} />;
+      return <Icon name="fan-minus" color="#c75e71" style={{ ...styles.icon, ...extraStyles }} />;
 
     default:
       return null;

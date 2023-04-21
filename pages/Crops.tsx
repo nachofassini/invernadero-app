@@ -1,19 +1,15 @@
-import { Button, IconButton, ListItem } from "@react-native-material/core";
 import Icon from "@expo/vector-icons/MaterialCommunityIcons";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import Stages from "./Stages";
-import Stage from "./Stage";
+import { IconButton, ListItem } from "@react-native-material/core";
 import { useIsFocused, useNavigation } from "@react-navigation/native";
 import { useLayoutEffect, useState } from "react";
-import { CropFormModal } from "../components/CropFormModal";
+
 import { CropInput, useGetCropsQuery } from "../gql";
-import { CropsNavigation, CropsScreenProps, EditStageScreenProps, StagesScreenProps } from "../types/navigation";
-import { Snackbar } from "../components/Snackbar";
+import { CropsScreenProps } from "../types/navigation";
+import { CropFormModal } from "../components/CropFormModal";
 import { ScrollableView } from "../components/ScrollableView";
+import { Snackbar } from "../components/Snackbar";
 
-const Stack = createNativeStackNavigator<CropsNavigation>();
-
-const CropList = () => {
+export const CropList = () => {
   const { navigate, getParent } = useNavigation<CropsScreenProps["navigation"]>();
   const isFocused = useIsFocused();
 
@@ -66,31 +62,3 @@ const CropList = () => {
     </>
   );
 };
-
-const Crops = () => (
-  <Stack.Navigator initialRouteName="Home">
-    <Stack.Screen name="Home" component={CropList} options={{ headerShown: false }} />
-    <Stack.Screen
-      name="Stages"
-      component={Stages}
-      options={({ navigation, route }: StagesScreenProps) => ({
-        title: "Etapas",
-        headerRight: () => (
-          <IconButton
-            icon={(props) => <Icon name="plus" {...props} />}
-            onPress={() => navigation.navigate("NewStage", { cropId: route.params.id })}
-            pressEffect="none"
-          />
-        ),
-      })}
-    />
-    <Stack.Screen name="NewStage" component={Stage} options={{ title: "Nueva etapa" }} />
-    <Stack.Screen
-      name="EditStage"
-      component={Stage}
-      options={({ route }: EditStageScreenProps) => ({ title: `Editar: ${route.params.stageName}` })}
-    />
-  </Stack.Navigator>
-);
-
-export default Crops;

@@ -1,28 +1,36 @@
+fragment ActivationData on Activation {
+  id
+  activatedBy
+  createdAt
+  updatedAt
+  activeUntil
+  enabled
+  device
+  amount
+  measureUnit
+  measureId
+}
+
 query GetActivation($id: ID!) {
   activation(id: $id) {
-    id
-    activatedBy
-    createdAt
-    activeUntil
-    enabled
-    device
-    amount
-    measureUnit
-    measureId
+    ...ActivationData
   }
 }
 
-query GetActivations($device: Device) {
-  activations(device: $device) {
-    id
-    activatedBy
-    createdAt
-    activeUntil
-    enabled
-    device
-    amount
-    measureUnit
-    measureId
+query GetActivations($device: Device, $limit: Int, $offset: Int) {
+  activations(device: $device, limit: $limit, offset: $offset) {
+    ...ActivationData
+  }
+}
+
+query GetLastActivationsPaginated($device: Device, $first: Int!, $page: Int) {
+  lastActivationsPaginated(device: $device, first: $first, page: $page) {
+    paginatorInfo {
+      ...PaginatorFields
+    }
+    data {
+      ...ActivationData
+    }
   }
 }
 
@@ -33,17 +41,23 @@ query GetEnabledDevices {
   }
 }
 
+query GetActivationsCountGroupedByDevice {
+  activationsCountGroupedByDevice {
+    device
+    count
+  }
+}
+
+query GetActivationsCountGroupedByType {
+  activationsCountGroupedByType {
+    activatedBy
+    count
+  }
+}
+
 mutation ActivateDevice($device: Device!, $amount: Float!) {
   activateDevice(device: $device, amount: $amount) {
-    id
-    activatedBy
-    createdAt
-    activeUntil
-    enabled
-    device
-    amount
-    measureUnit
-    measureId
+    ...ActivationData
   }
 }
 

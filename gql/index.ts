@@ -41,6 +41,15 @@ export type Activation = {
   updatedAt: Scalars["DateTime"];
 };
 
+/** A paginated list of Activation items. */
+export type ActivationPaginator = {
+  __typename?: "ActivationPaginator";
+  /** A list of Activation items. */
+  data: Array<Activation>;
+  /** Pagination information about the list of items. */
+  paginatorInfo: PaginatorInfo;
+};
+
 export enum ActivationType {
   HighCo2 = "high_co2",
   HighHumidity = "high_humidity",
@@ -53,6 +62,18 @@ export enum ActivationType {
   LowTemp = "low_temp",
   Manual = "manual",
 }
+
+export type ActivationsGroupedByDevice = {
+  __typename?: "ActivationsGroupedByDevice";
+  count: Scalars["Int"];
+  device: Device;
+};
+
+export type ActivationsGroupedByType = {
+  __typename?: "ActivationsGroupedByType";
+  activatedBy: ActivationType;
+  count: Scalars["Int"];
+};
 
 export type ActivePlan = {
   __typename?: "ActivePlan";
@@ -134,12 +155,22 @@ export type Measure = Sensors & {
   updatedAt: Scalars["DateTime"];
 };
 
+/** A paginated list of Measure items. */
+export type MeasurePaginator = {
+  __typename?: "MeasurePaginator";
+  /** A list of Measure items. */
+  data: Array<Measure>;
+  /** Pagination information about the list of items. */
+  paginatorInfo: PaginatorInfo;
+};
+
 export type MeasureStatistic = Sensors & {
   __typename?: "MeasureStatistic";
   /** Co2 ppm */
   co2: Scalars["Float"];
   /** Electricity consumption. */
   consumption: Scalars["Float"];
+  date: Scalars["DateTime"];
   /** Greenhouse humidity */
   insideHumidity: Scalars["Float"];
   /** Greenhouse temperature */
@@ -292,6 +323,8 @@ export type Query = {
   activation: Activation;
   /** Get last activations, may be filtered by device type */
   activations: Array<Activation>;
+  activationsCountGroupedByDevice: Array<ActivationsGroupedByDevice>;
+  activationsCountGroupedByType: Array<ActivationsGroupedByType>;
   activeCrop?: Maybe<Crop>;
   /** @deprecated Use `activeCrop` instead */
   activePlan: ActivePlan;
@@ -299,17 +332,20 @@ export type Query = {
   crops: Array<Crop>;
   /** Get currently enabled devices */
   enabledDevices: Array<Activation>;
+  /** Get last activations paginated, may be filtered by device type */
+  lastActivationsPaginated?: Maybe<ActivationPaginator>;
   /** Get last measure */
   lastMeasure: Measure;
   lastMeasures: Array<Measure>;
+  lastMeasuresPaginated?: Maybe<MeasurePaginator>;
   /** Find a single stage by an identifying attribute. */
   measure: Measure;
   /** Get measures by date */
   measures: Array<Measure>;
-  measuresAverage: Array<MeasureStatistic>;
+  measuresAverage: MeasureStatistic;
   /** Get measures average grouped by day */
-  measuresAverageByDay: Array<MeasureStatistic>;
-  measuresAverageByHour: Array<MeasureStatistic>;
+  measuresAverageGroupedByDay: Array<MeasureStatistic>;
+  measuresAverageGroupedByHour: Array<MeasureStatistic>;
   /** Find a single stage by an identifying attribute. */
   stage: Stage;
   /** List multiple stages. */
@@ -328,6 +364,18 @@ export type QueryActivationArgs = {
 /** Indicates what fields are available at the top level of a query operation. */
 export type QueryActivationsArgs = {
   device?: InputMaybe<Device>;
+  limit?: InputMaybe<Scalars["Int"]>;
+  offset?: InputMaybe<Scalars["Int"]>;
+};
+
+/** Indicates what fields are available at the top level of a query operation. */
+export type QueryActivationsCountGroupedByDeviceArgs = {
+  amount?: InputMaybe<Scalars["Int"]>;
+};
+
+/** Indicates what fields are available at the top level of a query operation. */
+export type QueryActivationsCountGroupedByTypeArgs = {
+  amount?: InputMaybe<Scalars["Int"]>;
 };
 
 /** Indicates what fields are available at the top level of a query operation. */
@@ -339,6 +387,25 @@ export type QueryCropArgs = {
 /** Indicates what fields are available at the top level of a query operation. */
 export type QueryCropsArgs = {
   name?: InputMaybe<Scalars["String"]>;
+};
+
+/** Indicates what fields are available at the top level of a query operation. */
+export type QueryLastActivationsPaginatedArgs = {
+  device?: InputMaybe<Device>;
+  first: Scalars["Int"];
+  page?: InputMaybe<Scalars["Int"]>;
+};
+
+/** Indicates what fields are available at the top level of a query operation. */
+export type QueryLastMeasuresArgs = {
+  limit?: InputMaybe<Scalars["Int"]>;
+  offset?: InputMaybe<Scalars["Int"]>;
+};
+
+/** Indicates what fields are available at the top level of a query operation. */
+export type QueryLastMeasuresPaginatedArgs = {
+  first: Scalars["Int"];
+  page?: InputMaybe<Scalars["Int"]>;
 };
 
 /** Indicates what fields are available at the top level of a query operation. */
@@ -357,12 +424,12 @@ export type QueryMeasuresAverageArgs = {
 };
 
 /** Indicates what fields are available at the top level of a query operation. */
-export type QueryMeasuresAverageByDayArgs = {
+export type QueryMeasuresAverageGroupedByDayArgs = {
   createdAt: DateRange;
 };
 
 /** Indicates what fields are available at the top level of a query operation. */
-export type QueryMeasuresAverageByHourArgs = {
+export type QueryMeasuresAverageGroupedByHourArgs = {
   createdAt: DateTimeRange;
 };
 
@@ -542,6 +609,20 @@ export type WeatherSetup = {
   minTemperature: Scalars["Float"];
 };
 
+export type ActivationDataFragment = {
+  __typename?: "Activation";
+  id: string;
+  activatedBy?: ActivationType | null;
+  createdAt: any;
+  updatedAt: any;
+  activeUntil?: any | null;
+  enabled: boolean;
+  device: Device;
+  amount: number;
+  measureUnit?: MeasureUnit | null;
+  measureId?: string | null;
+};
+
 export type GetActivationQueryVariables = Exact<{
   id: Scalars["ID"];
 }>;
@@ -553,6 +634,7 @@ export type GetActivationQuery = {
     id: string;
     activatedBy?: ActivationType | null;
     createdAt: any;
+    updatedAt: any;
     activeUntil?: any | null;
     enabled: boolean;
     device: Device;
@@ -564,6 +646,8 @@ export type GetActivationQuery = {
 
 export type GetActivationsQueryVariables = Exact<{
   device?: InputMaybe<Device>;
+  limit?: InputMaybe<Scalars["Int"]>;
+  offset?: InputMaybe<Scalars["Int"]>;
 }>;
 
 export type GetActivationsQuery = {
@@ -573,6 +657,7 @@ export type GetActivationsQuery = {
     id: string;
     activatedBy?: ActivationType | null;
     createdAt: any;
+    updatedAt: any;
     activeUntil?: any | null;
     enabled: boolean;
     device: Device;
@@ -582,11 +667,66 @@ export type GetActivationsQuery = {
   }>;
 };
 
+export type GetLastActivationsPaginatedQueryVariables = Exact<{
+  device?: InputMaybe<Device>;
+  first: Scalars["Int"];
+  page?: InputMaybe<Scalars["Int"]>;
+}>;
+
+export type GetLastActivationsPaginatedQuery = {
+  __typename?: "Query";
+  lastActivationsPaginated?: {
+    __typename?: "ActivationPaginator";
+    paginatorInfo: {
+      __typename?: "PaginatorInfo";
+      count: number;
+      currentPage: number;
+      firstItem?: number | null;
+      hasMorePages: boolean;
+      lastItem?: number | null;
+      lastPage: number;
+      perPage: number;
+      total: number;
+    };
+    data: Array<{
+      __typename?: "Activation";
+      id: string;
+      activatedBy?: ActivationType | null;
+      createdAt: any;
+      updatedAt: any;
+      activeUntil?: any | null;
+      enabled: boolean;
+      device: Device;
+      amount: number;
+      measureUnit?: MeasureUnit | null;
+      measureId?: string | null;
+    }>;
+  } | null;
+};
+
 export type GetEnabledDevicesQueryVariables = Exact<{ [key: string]: never }>;
 
 export type GetEnabledDevicesQuery = {
   __typename?: "Query";
   enabledDevices: Array<{ __typename?: "Activation"; id: string; device: Device }>;
+};
+
+export type GetActivationsCountGroupedByDeviceQueryVariables = Exact<{ [key: string]: never }>;
+
+export type GetActivationsCountGroupedByDeviceQuery = {
+  __typename?: "Query";
+  activationsCountGroupedByDevice: Array<{ __typename?: "ActivationsGroupedByDevice"; device: Device; count: number }>;
+};
+
+export type GetActivationsCountGroupedByTypeQueryVariables = Exact<{ [key: string]: never }>;
+
+export type GetActivationsCountGroupedByTypeQuery = {
+  __typename?: "Query";
+  activationsCountGroupedByType: Array<{
+    __typename?: "ActivationsGroupedByType";
+    activatedBy: ActivationType;
+    count: number;
+  }>;
 };
 
 export type ActivateDeviceMutationVariables = Exact<{
@@ -601,6 +741,7 @@ export type ActivateDeviceMutation = {
     id: string;
     activatedBy?: ActivationType | null;
     createdAt: any;
+    updatedAt: any;
     activeUntil?: any | null;
     enabled: boolean;
     device: Device;
@@ -711,6 +852,33 @@ export type DeleteCropMutation = {
   deleteCrop: { __typename?: "Crop"; id: string; name: string; active: boolean; activeSince?: any | null; day: number };
 };
 
+export type PaginatorFieldsFragment = {
+  __typename?: "PaginatorInfo";
+  count: number;
+  currentPage: number;
+  firstItem?: number | null;
+  hasMorePages: boolean;
+  lastItem?: number | null;
+  lastPage: number;
+  perPage: number;
+  total: number;
+};
+
+export type MeasureDataFragment = {
+  __typename?: "Measure";
+  id: string;
+  createdAt: any;
+  updatedAt: any;
+  consumption: number;
+  insideTemperature: number;
+  outsideTemperature: number;
+  insideHumidity: number;
+  outsideHumidity: number;
+  soilHumidity: number;
+  co2: number;
+  lighting: number;
+};
+
 export type GetLastMeasureQueryVariables = Exact<{ [key: string]: never }>;
 
 export type GetLastMeasureQuery = {
@@ -719,6 +887,7 @@ export type GetLastMeasureQuery = {
     __typename?: "Measure";
     id: string;
     createdAt: any;
+    updatedAt: any;
     consumption: number;
     insideTemperature: number;
     outsideTemperature: number;
@@ -730,7 +899,10 @@ export type GetLastMeasureQuery = {
   };
 };
 
-export type GetLastMeasuresQueryVariables = Exact<{ [key: string]: never }>;
+export type GetLastMeasuresQueryVariables = Exact<{
+  limit?: InputMaybe<Scalars["Int"]>;
+  offset?: InputMaybe<Scalars["Int"]>;
+}>;
 
 export type GetLastMeasuresQuery = {
   __typename?: "Query";
@@ -738,7 +910,64 @@ export type GetLastMeasuresQuery = {
     __typename?: "Measure";
     id: string;
     createdAt: any;
+    updatedAt: any;
     consumption: number;
+    insideTemperature: number;
+    outsideTemperature: number;
+    insideHumidity: number;
+    outsideHumidity: number;
+    soilHumidity: number;
+    co2: number;
+    lighting: number;
+  }>;
+};
+
+export type GetLastMeasuresPaginatedQueryVariables = Exact<{
+  first: Scalars["Int"];
+  page?: InputMaybe<Scalars["Int"]>;
+}>;
+
+export type GetLastMeasuresPaginatedQuery = {
+  __typename?: "Query";
+  lastMeasuresPaginated?: {
+    __typename?: "MeasurePaginator";
+    paginatorInfo: {
+      __typename?: "PaginatorInfo";
+      count: number;
+      currentPage: number;
+      firstItem?: number | null;
+      hasMorePages: boolean;
+      lastItem?: number | null;
+      lastPage: number;
+      perPage: number;
+      total: number;
+    };
+    data: Array<{
+      __typename?: "Measure";
+      id: string;
+      createdAt: any;
+      updatedAt: any;
+      consumption: number;
+      insideTemperature: number;
+      outsideTemperature: number;
+      insideHumidity: number;
+      outsideHumidity: number;
+      soilHumidity: number;
+      co2: number;
+      lighting: number;
+    }>;
+  } | null;
+};
+
+export type GetMeasuresAverageGroupedByDayQueryVariables = Exact<{
+  range: DateRange;
+}>;
+
+export type GetMeasuresAverageGroupedByDayQuery = {
+  __typename?: "Query";
+  measuresAverageGroupedByDay: Array<{
+    __typename?: "MeasureStatistic";
+    date: any;
     insideTemperature: number;
     outsideTemperature: number;
     insideHumidity: number;
@@ -869,6 +1098,20 @@ export type DeleteStageMutation = {
   };
 };
 
+export const ActivationDataFragmentDoc = gql`
+  fragment ActivationData on Activation {
+    id
+    activatedBy
+    createdAt
+    updatedAt
+    activeUntil
+    enabled
+    device
+    amount
+    measureUnit
+    measureId
+  }
+`;
 export const CropBasicDataFragmentDoc = gql`
   fragment CropBasicData on Crop {
     id
@@ -876,6 +1119,33 @@ export const CropBasicDataFragmentDoc = gql`
     active
     activeSince
     day
+  }
+`;
+export const PaginatorFieldsFragmentDoc = gql`
+  fragment PaginatorFields on PaginatorInfo {
+    count
+    currentPage
+    firstItem
+    hasMorePages
+    lastItem
+    lastPage
+    perPage
+    total
+  }
+`;
+export const MeasureDataFragmentDoc = gql`
+  fragment MeasureData on Measure {
+    id
+    createdAt
+    updatedAt
+    consumption
+    insideTemperature
+    outsideTemperature
+    insideHumidity
+    outsideHumidity
+    soilHumidity
+    co2
+    lighting
   }
 `;
 export const StageBasicDataFragmentDoc = gql`
@@ -908,17 +1178,10 @@ export const WeatherSettingsFragmentDoc = gql`
 export const GetActivationDocument = gql`
   query GetActivation($id: ID!) {
     activation(id: $id) {
-      id
-      activatedBy
-      createdAt
-      activeUntil
-      enabled
-      device
-      amount
-      measureUnit
-      measureId
+      ...ActivationData
     }
   }
+  ${ActivationDataFragmentDoc}
 `;
 
 /**
@@ -953,19 +1216,12 @@ export type GetActivationQueryHookResult = ReturnType<typeof useGetActivationQue
 export type GetActivationLazyQueryHookResult = ReturnType<typeof useGetActivationLazyQuery>;
 export type GetActivationQueryResult = Apollo.QueryResult<GetActivationQuery, GetActivationQueryVariables>;
 export const GetActivationsDocument = gql`
-  query GetActivations($device: Device) {
-    activations(device: $device) {
-      id
-      activatedBy
-      createdAt
-      activeUntil
-      enabled
-      device
-      amount
-      measureUnit
-      measureId
+  query GetActivations($device: Device, $limit: Int, $offset: Int) {
+    activations(device: $device, limit: $limit, offset: $offset) {
+      ...ActivationData
     }
   }
+  ${ActivationDataFragmentDoc}
 `;
 
 /**
@@ -981,6 +1237,8 @@ export const GetActivationsDocument = gql`
  * const { data, loading, error } = useGetActivationsQuery({
  *   variables: {
  *      device: // value for 'device'
+ *      limit: // value for 'limit'
+ *      offset: // value for 'offset'
  *   },
  * });
  */
@@ -999,6 +1257,63 @@ export function useGetActivationsLazyQuery(
 export type GetActivationsQueryHookResult = ReturnType<typeof useGetActivationsQuery>;
 export type GetActivationsLazyQueryHookResult = ReturnType<typeof useGetActivationsLazyQuery>;
 export type GetActivationsQueryResult = Apollo.QueryResult<GetActivationsQuery, GetActivationsQueryVariables>;
+export const GetLastActivationsPaginatedDocument = gql`
+  query GetLastActivationsPaginated($device: Device, $first: Int!, $page: Int) {
+    lastActivationsPaginated(device: $device, first: $first, page: $page) {
+      paginatorInfo {
+        ...PaginatorFields
+      }
+      data {
+        ...ActivationData
+      }
+    }
+  }
+  ${PaginatorFieldsFragmentDoc}
+  ${ActivationDataFragmentDoc}
+`;
+
+/**
+ * __useGetLastActivationsPaginatedQuery__
+ *
+ * To run a query within a React component, call `useGetLastActivationsPaginatedQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetLastActivationsPaginatedQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetLastActivationsPaginatedQuery({
+ *   variables: {
+ *      device: // value for 'device'
+ *      first: // value for 'first'
+ *      page: // value for 'page'
+ *   },
+ * });
+ */
+export function useGetLastActivationsPaginatedQuery(
+  baseOptions: Apollo.QueryHookOptions<GetLastActivationsPaginatedQuery, GetLastActivationsPaginatedQueryVariables>
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<GetLastActivationsPaginatedQuery, GetLastActivationsPaginatedQueryVariables>(
+    GetLastActivationsPaginatedDocument,
+    options
+  );
+}
+export function useGetLastActivationsPaginatedLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<GetLastActivationsPaginatedQuery, GetLastActivationsPaginatedQueryVariables>
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<GetLastActivationsPaginatedQuery, GetLastActivationsPaginatedQueryVariables>(
+    GetLastActivationsPaginatedDocument,
+    options
+  );
+}
+export type GetLastActivationsPaginatedQueryHookResult = ReturnType<typeof useGetLastActivationsPaginatedQuery>;
+export type GetLastActivationsPaginatedLazyQueryHookResult = ReturnType<typeof useGetLastActivationsPaginatedLazyQuery>;
+export type GetLastActivationsPaginatedQueryResult = Apollo.QueryResult<
+  GetLastActivationsPaginatedQuery,
+  GetLastActivationsPaginatedQueryVariables
+>;
 export const GetEnabledDevicesDocument = gql`
   query GetEnabledDevices {
     enabledDevices {
@@ -1041,20 +1356,129 @@ export function useGetEnabledDevicesLazyQuery(
 export type GetEnabledDevicesQueryHookResult = ReturnType<typeof useGetEnabledDevicesQuery>;
 export type GetEnabledDevicesLazyQueryHookResult = ReturnType<typeof useGetEnabledDevicesLazyQuery>;
 export type GetEnabledDevicesQueryResult = Apollo.QueryResult<GetEnabledDevicesQuery, GetEnabledDevicesQueryVariables>;
+export const GetActivationsCountGroupedByDeviceDocument = gql`
+  query GetActivationsCountGroupedByDevice {
+    activationsCountGroupedByDevice {
+      device
+      count
+    }
+  }
+`;
+
+/**
+ * __useGetActivationsCountGroupedByDeviceQuery__
+ *
+ * To run a query within a React component, call `useGetActivationsCountGroupedByDeviceQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetActivationsCountGroupedByDeviceQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetActivationsCountGroupedByDeviceQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetActivationsCountGroupedByDeviceQuery(
+  baseOptions?: Apollo.QueryHookOptions<
+    GetActivationsCountGroupedByDeviceQuery,
+    GetActivationsCountGroupedByDeviceQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<GetActivationsCountGroupedByDeviceQuery, GetActivationsCountGroupedByDeviceQueryVariables>(
+    GetActivationsCountGroupedByDeviceDocument,
+    options
+  );
+}
+export function useGetActivationsCountGroupedByDeviceLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetActivationsCountGroupedByDeviceQuery,
+    GetActivationsCountGroupedByDeviceQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<GetActivationsCountGroupedByDeviceQuery, GetActivationsCountGroupedByDeviceQueryVariables>(
+    GetActivationsCountGroupedByDeviceDocument,
+    options
+  );
+}
+export type GetActivationsCountGroupedByDeviceQueryHookResult = ReturnType<
+  typeof useGetActivationsCountGroupedByDeviceQuery
+>;
+export type GetActivationsCountGroupedByDeviceLazyQueryHookResult = ReturnType<
+  typeof useGetActivationsCountGroupedByDeviceLazyQuery
+>;
+export type GetActivationsCountGroupedByDeviceQueryResult = Apollo.QueryResult<
+  GetActivationsCountGroupedByDeviceQuery,
+  GetActivationsCountGroupedByDeviceQueryVariables
+>;
+export const GetActivationsCountGroupedByTypeDocument = gql`
+  query GetActivationsCountGroupedByType {
+    activationsCountGroupedByType {
+      activatedBy
+      count
+    }
+  }
+`;
+
+/**
+ * __useGetActivationsCountGroupedByTypeQuery__
+ *
+ * To run a query within a React component, call `useGetActivationsCountGroupedByTypeQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetActivationsCountGroupedByTypeQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetActivationsCountGroupedByTypeQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetActivationsCountGroupedByTypeQuery(
+  baseOptions?: Apollo.QueryHookOptions<
+    GetActivationsCountGroupedByTypeQuery,
+    GetActivationsCountGroupedByTypeQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<GetActivationsCountGroupedByTypeQuery, GetActivationsCountGroupedByTypeQueryVariables>(
+    GetActivationsCountGroupedByTypeDocument,
+    options
+  );
+}
+export function useGetActivationsCountGroupedByTypeLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetActivationsCountGroupedByTypeQuery,
+    GetActivationsCountGroupedByTypeQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<GetActivationsCountGroupedByTypeQuery, GetActivationsCountGroupedByTypeQueryVariables>(
+    GetActivationsCountGroupedByTypeDocument,
+    options
+  );
+}
+export type GetActivationsCountGroupedByTypeQueryHookResult = ReturnType<
+  typeof useGetActivationsCountGroupedByTypeQuery
+>;
+export type GetActivationsCountGroupedByTypeLazyQueryHookResult = ReturnType<
+  typeof useGetActivationsCountGroupedByTypeLazyQuery
+>;
+export type GetActivationsCountGroupedByTypeQueryResult = Apollo.QueryResult<
+  GetActivationsCountGroupedByTypeQuery,
+  GetActivationsCountGroupedByTypeQueryVariables
+>;
 export const ActivateDeviceDocument = gql`
   mutation ActivateDevice($device: Device!, $amount: Float!) {
     activateDevice(device: $device, amount: $amount) {
-      id
-      activatedBy
-      createdAt
-      activeUntil
-      enabled
-      device
-      amount
-      measureUnit
-      measureId
+      ...ActivationData
     }
   }
+  ${ActivationDataFragmentDoc}
 `;
 export type ActivateDeviceMutationFn = Apollo.MutationFunction<ActivateDeviceMutation, ActivateDeviceMutationVariables>;
 
@@ -1383,6 +1807,7 @@ export const GetLastMeasureDocument = gql`
     lastMeasure {
       id
       createdAt
+      updatedAt
       consumption
       insideTemperature
       outsideTemperature
@@ -1426,10 +1851,11 @@ export type GetLastMeasureQueryHookResult = ReturnType<typeof useGetLastMeasureQ
 export type GetLastMeasureLazyQueryHookResult = ReturnType<typeof useGetLastMeasureLazyQuery>;
 export type GetLastMeasureQueryResult = Apollo.QueryResult<GetLastMeasureQuery, GetLastMeasureQueryVariables>;
 export const GetLastMeasuresDocument = gql`
-  query GetLastMeasures {
-    lastMeasures {
+  query GetLastMeasures($limit: Int, $offset: Int) {
+    lastMeasures(limit: $limit, offset: $offset) {
       id
       createdAt
+      updatedAt
       consumption
       insideTemperature
       outsideTemperature
@@ -1454,6 +1880,8 @@ export const GetLastMeasuresDocument = gql`
  * @example
  * const { data, loading, error } = useGetLastMeasuresQuery({
  *   variables: {
+ *      limit: // value for 'limit'
+ *      offset: // value for 'offset'
  *   },
  * });
  */
@@ -1472,6 +1900,125 @@ export function useGetLastMeasuresLazyQuery(
 export type GetLastMeasuresQueryHookResult = ReturnType<typeof useGetLastMeasuresQuery>;
 export type GetLastMeasuresLazyQueryHookResult = ReturnType<typeof useGetLastMeasuresLazyQuery>;
 export type GetLastMeasuresQueryResult = Apollo.QueryResult<GetLastMeasuresQuery, GetLastMeasuresQueryVariables>;
+export const GetLastMeasuresPaginatedDocument = gql`
+  query GetLastMeasuresPaginated($first: Int!, $page: Int) {
+    lastMeasuresPaginated(first: $first, page: $page) {
+      paginatorInfo {
+        ...PaginatorFields
+      }
+      data {
+        ...MeasureData
+      }
+    }
+  }
+  ${PaginatorFieldsFragmentDoc}
+  ${MeasureDataFragmentDoc}
+`;
+
+/**
+ * __useGetLastMeasuresPaginatedQuery__
+ *
+ * To run a query within a React component, call `useGetLastMeasuresPaginatedQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetLastMeasuresPaginatedQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetLastMeasuresPaginatedQuery({
+ *   variables: {
+ *      first: // value for 'first'
+ *      page: // value for 'page'
+ *   },
+ * });
+ */
+export function useGetLastMeasuresPaginatedQuery(
+  baseOptions: Apollo.QueryHookOptions<GetLastMeasuresPaginatedQuery, GetLastMeasuresPaginatedQueryVariables>
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<GetLastMeasuresPaginatedQuery, GetLastMeasuresPaginatedQueryVariables>(
+    GetLastMeasuresPaginatedDocument,
+    options
+  );
+}
+export function useGetLastMeasuresPaginatedLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<GetLastMeasuresPaginatedQuery, GetLastMeasuresPaginatedQueryVariables>
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<GetLastMeasuresPaginatedQuery, GetLastMeasuresPaginatedQueryVariables>(
+    GetLastMeasuresPaginatedDocument,
+    options
+  );
+}
+export type GetLastMeasuresPaginatedQueryHookResult = ReturnType<typeof useGetLastMeasuresPaginatedQuery>;
+export type GetLastMeasuresPaginatedLazyQueryHookResult = ReturnType<typeof useGetLastMeasuresPaginatedLazyQuery>;
+export type GetLastMeasuresPaginatedQueryResult = Apollo.QueryResult<
+  GetLastMeasuresPaginatedQuery,
+  GetLastMeasuresPaginatedQueryVariables
+>;
+export const GetMeasuresAverageGroupedByDayDocument = gql`
+  query GetMeasuresAverageGroupedByDay($range: DateRange!) {
+    measuresAverageGroupedByDay(createdAt: $range) {
+      date
+      insideTemperature
+      outsideTemperature
+      insideHumidity
+      outsideHumidity
+      soilHumidity
+      co2
+      lighting
+    }
+  }
+`;
+
+/**
+ * __useGetMeasuresAverageGroupedByDayQuery__
+ *
+ * To run a query within a React component, call `useGetMeasuresAverageGroupedByDayQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetMeasuresAverageGroupedByDayQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetMeasuresAverageGroupedByDayQuery({
+ *   variables: {
+ *      range: // value for 'range'
+ *   },
+ * });
+ */
+export function useGetMeasuresAverageGroupedByDayQuery(
+  baseOptions: Apollo.QueryHookOptions<
+    GetMeasuresAverageGroupedByDayQuery,
+    GetMeasuresAverageGroupedByDayQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<GetMeasuresAverageGroupedByDayQuery, GetMeasuresAverageGroupedByDayQueryVariables>(
+    GetMeasuresAverageGroupedByDayDocument,
+    options
+  );
+}
+export function useGetMeasuresAverageGroupedByDayLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetMeasuresAverageGroupedByDayQuery,
+    GetMeasuresAverageGroupedByDayQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<GetMeasuresAverageGroupedByDayQuery, GetMeasuresAverageGroupedByDayQueryVariables>(
+    GetMeasuresAverageGroupedByDayDocument,
+    options
+  );
+}
+export type GetMeasuresAverageGroupedByDayQueryHookResult = ReturnType<typeof useGetMeasuresAverageGroupedByDayQuery>;
+export type GetMeasuresAverageGroupedByDayLazyQueryHookResult = ReturnType<
+  typeof useGetMeasuresAverageGroupedByDayLazyQuery
+>;
+export type GetMeasuresAverageGroupedByDayQueryResult = Apollo.QueryResult<
+  GetMeasuresAverageGroupedByDayQuery,
+  GetMeasuresAverageGroupedByDayQueryVariables
+>;
 export const GetStageDocument = gql`
   query GetStage($id: ID!) {
     stage(id: $id) {
