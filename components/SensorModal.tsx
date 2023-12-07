@@ -91,7 +91,7 @@ export const SensorModal = ({ sensor, onDismiss }: SensorModalProps) => {
   const { data: { lastMeasures } = {}, loading: loadingMeasures } = useGetLastMeasuresQuery();
 
   const navigateToReport = () => {
-    navigate("Reports", {});
+    navigate("Reports", { screen: "Sensors" });
     onDismiss();
   };
 
