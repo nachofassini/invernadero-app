@@ -1,4 +1,4 @@
-import { ActivityIndicator, HStack, IconButton, Surface, Text, VStack } from "@react-native-material/core";
+import { ActivityIndicator, Button, HStack, IconButton, Surface, Text, VStack } from "@react-native-material/core";
 import { StyleSheet, View, Pressable } from "react-native";
 import Icon from "@expo/vector-icons/MaterialCommunityIcons";
 import { useEffect, useMemo, useState } from "react";
@@ -53,7 +53,12 @@ export const Dashboard = () => {
   const toggleShowChangePlanModal = () => setShowChangePlanModal((prevVal) => !prevVal);
 
   const { data: { activeCrop } = {} } = useGetActiveCropQuery();
-  const { data: { lastMeasure } = {}, loading: refreshing, refetch } = useGetLastMeasureQuery({ pollInterval: 10000 });
+  const {
+    data: { lastMeasure } = {},
+    loading: refreshing,
+    error,
+    refetch,
+  } = useGetLastMeasureQuery({ pollInterval: 10000 });
   const { data: { enabledDevices } = {} } = useGetEnabledDevicesQuery({ pollInterval: 10000 });
 
   useEffect(() => {
@@ -119,6 +124,14 @@ export const Dashboard = () => {
       : [];
   }, [enabledDevices]);
 
+  if (error) {
+    return (
+      <View style={{ padding: 20 }}>
+        <Text style={{ padding: 20, textAlign: "center" }}>No se pudo establecer conexiön con el invernadero</Text>
+        <Button onPress={() => refetch()} title="Intentar nuevamente" color="secondary" />
+      </View>
+    );
+  }
   if (!lastMeasure) return <Spinner loading />;
 
   return (
