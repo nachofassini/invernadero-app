@@ -65,7 +65,7 @@ export const Dashboard = () => {
     if (setOptions) {
       setOptions({
         headerTitle: () =>
-          activeCrop?.id ? (
+          activeCrop?.id && activeCrop.activeStage ? (
             <Pressable onPress={toggleShowPlanModal}>
               <Text>{getPlanTitle(activeCrop)}</Text>
             </Pressable>
