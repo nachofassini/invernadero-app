@@ -37,7 +37,8 @@
     "react-native-web": "~0.19.6",
     "rn-range-slider": "^2.2.1",
     "yup": "^1.0.2",
-    "expo-splash-screen": "~0.20.5"
+    "expo-splash-screen": "~0.20.5",
+    "expo-dev-client": "~2.4.12"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",

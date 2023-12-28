@@ -3,14 +3,15 @@ import { ExpoConfig, ConfigContext } from "expo/config";
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
   name: "invernadero-app",
+  description: "Aplicación para el control de un invernadero",
   slug: "invernadero-app",
   version: "1.0.0",
   owner: "nachofassini",
   orientation: "portrait",
-  icon: "./assets/icon.png",
+  icon: "./assets/happy-strawberry/ios/iTunesArtwork@2x.png",
   userInterfaceStyle: "light",
   splash: {
-    image: "./assets/splash.png",
+    image: "./assets/greenhouse.png",
     resizeMode: "contain",
     backgroundColor: "#ffffff",
   },
@@ -20,10 +21,10 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   assetBundlePatterns: ["**/*"],
   ios: {
     supportsTablet: true,
-    bundleIdentifier: "0.0.0-beta-1",
+    bundleIdentifier: "com.nachofassini.invernadero-app",
   },
   android: {
-    package: "com.nachofassini.invernaderoapp",
+    package: "com.nachofassini.invernadero-app",
     adaptiveIcon: {
       foregroundImage: "./assets/adaptive-icon.png",
       backgroundColor: "#FFFFFF",

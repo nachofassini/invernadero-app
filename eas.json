@@ -1,6 +1,8 @@
 {
   "cli": {
-    "version": ">= 5.9.1"
+    "version": ">= 5.9.1",
+    "promptToConfigurePushNotifications": false,
+    "appVersionSource": "remote"
   },
   "build": {
     "development": {
@@ -10,9 +12,20 @@
     "preview": {
       "distribution": "internal"
     },
-    "production": {}
+    "production": {
+      "autoIncrement": true
+    }
   },
   "submit": {
-    "production": {}
+    "production": {
+      "ios": {
+        "appleId": "nachofassini@gmail.com",
+        "sku": "invernadero-app",
+        "ascAppId": "6475063835",
+        "appleTeamId": "9ZRJ4RK9E3",
+        "language": "es-AR",
+        "appName": "Invernadero"
+      }
+    }
   }
 }
