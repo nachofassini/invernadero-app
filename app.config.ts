@@ -17,6 +17,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   },
   updates: {
     fallbackToCacheTimeout: 0,
+    url: "https://u.expo.dev/d906d5c8-c495-4b0f-9614-be43c53cb239",
   },
   assetBundlePatterns: ["**/*"],
   ios: {
@@ -37,5 +38,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     eas: {
       projectId: "d906d5c8-c495-4b0f-9614-be43c53cb239",
     },
+  },
+  runtimeVersion: {
+    policy: "appVersion",
   },
 });

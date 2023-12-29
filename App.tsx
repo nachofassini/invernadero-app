@@ -14,7 +14,8 @@ const styles = StyleSheet.create({
 });
 
 export default function App() {
-  const appLink = new HttpLink({ uri: `${process.env.EXPO_PUBLIC_API_URL}/graphql` });
+  // const appLink = new HttpLink({ uri: `${process.env.EXPO_PUBLIC_API_URL}/graphql` });
+  const appLink = new HttpLink({ uri: `https://invernadero-936727412860.herokuapp.com/graphql` });
 
   const errorLink = onError(({ graphQLErrors, networkError, forward }: ErrorResponse) => {
     if (graphQLErrors) {
