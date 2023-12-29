@@ -25,7 +25,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     bundleIdentifier: "com.nachofassini.invernadero-app",
   },
   android: {
-    package: "com.nachofassini.invernadero-app",
+    package: "com.nachofassini.invernadero",
     adaptiveIcon: {
       foregroundImage: "./assets/adaptive-icon.png",
       backgroundColor: "#FFFFFF",
