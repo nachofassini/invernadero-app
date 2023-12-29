@@ -15,7 +15,7 @@ const styles = StyleSheet.create({
 });
 
 export default function App() {
-  const appLink = new HttpLink({ uri: Constants.expoConfig?.extra?.apiUrl });
+  const appLink = new HttpLink({ uri: `${Constants.expoConfig?.extra?.apiUrl}/graphql` });
 
   const errorLink = onError(({ graphQLErrors, networkError, forward }: ErrorResponse) => {
     if (graphQLErrors) {
