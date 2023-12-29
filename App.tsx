@@ -3,7 +3,6 @@ import { ErrorResponse, onError } from "@apollo/client/link/error";
 import { Provider as ThemeProvider } from "@react-native-material/core";
 import { NavigationContainer } from "@react-navigation/native";
 import { StatusBar } from "expo-status-bar";
-import Constants from "expo-constants";
 import { SafeAreaView, StyleSheet } from "react-native";
 
 import { colors, theme } from "./constants";
@@ -15,7 +14,7 @@ const styles = StyleSheet.create({
 });
 
 export default function App() {
-  const appLink = new HttpLink({ uri: `${Constants.expoConfig?.extra?.apiUrl}/graphql` });
+  const appLink = new HttpLink({ uri: `${process.env.EXPO_PUBLIC_API_URL}/graphql` });
 
   const errorLink = onError(({ graphQLErrors, networkError, forward }: ErrorResponse) => {
     if (graphQLErrors) {

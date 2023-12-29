@@ -7,13 +7,25 @@
   "build": {
     "development": {
       "developmentClient": true,
-      "distribution": "internal"
+      "distribution": "internal",
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://ccfa-2800-810-439-ba9-5d96-a4a5-a5b5-172f.ngrok-free.app"
+      }
     },
     "preview": {
-      "distribution": "internal"
+      "distribution": "internal",
+      "ios": {
+        "simulator": true
+      },
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://ccfa-2800-810-439-ba9-5d96-a4a5-a5b5-172f.ngrok-free.app"
+      }
     },
     "production": {
-      "autoIncrement": true
+      "autoIncrement": true,
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://ccfa-2800-810-439-ba9-5d96-a4a5-a5b5-172f.ngrok-free.app"
+      }
     }
   },
   "submit": {

@@ -2,7 +2,7 @@ import { ExpoConfig, ConfigContext } from "expo/config";
 
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
-  name: "invernadero-app",
+  name: "Invernadero App",
   description: "Aplicación para el control de un invernadero",
   slug: "invernadero-app",
   version: "1.0.0",
@@ -34,7 +34,6 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     favicon: "./assets/favicon.png",
   },
   extra: {
-    apiUrl: process.env.EXPO_PUBLIC_API_URL,
     eas: {
       projectId: "d906d5c8-c495-4b0f-9614-be43c53cb239",
     },
