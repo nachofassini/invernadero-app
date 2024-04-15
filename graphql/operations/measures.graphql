@@ -78,3 +78,16 @@ query GetMeasuresAverageGroupedByDay($range: DateRange!) {
     lighting
   }
 }
+
+query GetMeasuresAverageGroupedByHour($range: DateTimeRange!) {
+  measuresAverageGroupedByHour(createdAt: $range) {
+    date
+    insideTemperature
+    outsideTemperature
+    insideHumidity
+    outsideHumidity
+    soilHumidity
+    co2
+    lighting
+  }
+}

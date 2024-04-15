@@ -988,6 +988,25 @@ export type GetMeasuresAverageGroupedByDayQuery = {
   }>;
 };
 
+export type GetMeasuresAverageGroupedByHourQueryVariables = Exact<{
+  range: DateTimeRange;
+}>;
+
+export type GetMeasuresAverageGroupedByHourQuery = {
+  __typename?: "Query";
+  measuresAverageGroupedByHour: Array<{
+    __typename?: "MeasureStatistic";
+    date: any;
+    insideTemperature: number;
+    outsideTemperature: number;
+    insideHumidity: number;
+    outsideHumidity: number;
+    soilHumidity: number;
+    co2?: number | null;
+    lighting: number;
+  }>;
+};
+
 export type StageBasicDataFragment = {
   __typename?: "Stage";
   id: string;
@@ -2041,6 +2060,69 @@ export type GetMeasuresAverageGroupedByDayLazyQueryHookResult = ReturnType<
 export type GetMeasuresAverageGroupedByDayQueryResult = Apollo.QueryResult<
   GetMeasuresAverageGroupedByDayQuery,
   GetMeasuresAverageGroupedByDayQueryVariables
+>;
+export const GetMeasuresAverageGroupedByHourDocument = gql`
+  query GetMeasuresAverageGroupedByHour($range: DateTimeRange!) {
+    measuresAverageGroupedByHour(createdAt: $range) {
+      date
+      insideTemperature
+      outsideTemperature
+      insideHumidity
+      outsideHumidity
+      soilHumidity
+      co2
+      lighting
+    }
+  }
+`;
+
+/**
+ * __useGetMeasuresAverageGroupedByHourQuery__
+ *
+ * To run a query within a React component, call `useGetMeasuresAverageGroupedByHourQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetMeasuresAverageGroupedByHourQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetMeasuresAverageGroupedByHourQuery({
+ *   variables: {
+ *      range: // value for 'range'
+ *   },
+ * });
+ */
+export function useGetMeasuresAverageGroupedByHourQuery(
+  baseOptions: Apollo.QueryHookOptions<
+    GetMeasuresAverageGroupedByHourQuery,
+    GetMeasuresAverageGroupedByHourQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<GetMeasuresAverageGroupedByHourQuery, GetMeasuresAverageGroupedByHourQueryVariables>(
+    GetMeasuresAverageGroupedByHourDocument,
+    options
+  );
+}
+export function useGetMeasuresAverageGroupedByHourLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetMeasuresAverageGroupedByHourQuery,
+    GetMeasuresAverageGroupedByHourQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<GetMeasuresAverageGroupedByHourQuery, GetMeasuresAverageGroupedByHourQueryVariables>(
+    GetMeasuresAverageGroupedByHourDocument,
+    options
+  );
+}
+export type GetMeasuresAverageGroupedByHourQueryHookResult = ReturnType<typeof useGetMeasuresAverageGroupedByHourQuery>;
+export type GetMeasuresAverageGroupedByHourLazyQueryHookResult = ReturnType<
+  typeof useGetMeasuresAverageGroupedByHourLazyQuery
+>;
+export type GetMeasuresAverageGroupedByHourQueryResult = Apollo.QueryResult<
+  GetMeasuresAverageGroupedByHourQuery,
+  GetMeasuresAverageGroupedByHourQueryVariables
 >;
 export const GetStageDocument = gql`
   query GetStage($id: ID!) {
