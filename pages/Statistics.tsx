@@ -2,7 +2,7 @@ import { ActivityIndicator, Surface, Text, VStack } from "@react-native-material
 import { Dimensions, StyleSheet, View } from "react-native";
 import { LineChart, PieChart } from "react-native-chart-kit";
 import { ScrollableView } from "../components/ScrollableView";
-import { formatDate, getDeviceActivationByDescription, getDeviceName } from "../utils/helpers";
+import { formatDate, getDeviceActivationByDescription, getDeviceName, showCo2 } from "../utils/helpers";
 import {
   useGetActivationsCountGroupedByDeviceQuery,
   useGetActivationsCountGroupedByTypeQuery,
@@ -124,37 +124,39 @@ export const Statistics = () => {
           )}
         </Surface>
 
-        <Surface style={styles.card}>
-          <Text style={styles.cardTitle}>Co2 promedio ultimos {MEASURE_FROM_LAST_N_DAYS} días</Text>
-          {loadingMeasuresAverage ? (
-            <ActivityIndicator color="green" />
-          ) : !measuresAverageGroupedByDay?.length ? (
-            <Text style={{ textAlign: "center" }}>Sin datos</Text>
-          ) : (
-            <LineChart
-              data={{
-                labels: measuresAverageGroupedByDay?.map((item) => formatDate(item.date, "D/M")) || [],
-                datasets: [{ data: measuresAverageGroupedByDay?.map((item) => item.co2 ?? 0) || [] }],
-              }}
-              width={Dimensions.get("screen").width - 60}
-              height={240}
-              yAxisLabel=""
-              yAxisSuffix=""
-              chartConfig={{
-                backgroundColor: "#e26a00",
-                backgroundGradientFrom: "#fb8c00",
-                backgroundGradientTo: "#ffa726",
-                decimalPlaces: 0,
-                color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-                style: {
-                  borderRadius: 16,
-                },
-              }}
-              style={{ borderRadius: 16 }}
-              verticalLabelRotation={60}
-            />
-          )}
-        </Surface>
+        {showCo2() && (
+          <Surface style={styles.card}>
+            <Text style={styles.cardTitle}>Co2 promedio ultimos {MEASURE_FROM_LAST_N_DAYS} días</Text>
+            {loadingMeasuresAverage ? (
+              <ActivityIndicator color="green" />
+            ) : !measuresAverageGroupedByDay?.length ? (
+              <Text style={{ textAlign: "center" }}>Sin datos</Text>
+            ) : (
+              <LineChart
+                data={{
+                  labels: measuresAverageGroupedByDay?.map((item) => formatDate(item.date, "D/M")) || [],
+                  datasets: [{ data: measuresAverageGroupedByDay?.map((item) => item.co2 ?? 0) || [] }],
+                }}
+                width={Dimensions.get("screen").width - 60}
+                height={240}
+                yAxisLabel=""
+                yAxisSuffix=""
+                chartConfig={{
+                  backgroundColor: "#e26a00",
+                  backgroundGradientFrom: "#fb8c00",
+                  backgroundGradientTo: "#ffa726",
+                  decimalPlaces: 0,
+                  color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                  style: {
+                    borderRadius: 16,
+                  },
+                }}
+                style={{ borderRadius: 16 }}
+                verticalLabelRotation={60}
+              />
+            )}
+          </Surface>
+        )}
 
         <Surface style={styles.card}>
           <Text style={styles.cardTitle}>Luz promedio últimos {MEASURE_FROM_LAST_N_DAYS} días</Text>

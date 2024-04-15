@@ -1,6 +1,6 @@
 import { Dialog, DialogHeader, DialogContent, Text, VStack, HStack } from "@react-native-material/core";
 import { MeasureDataFragment, Measures, SensorType } from "../gql";
-import { formatDate, getMeasureUnitBySensorType } from "../utils/helpers";
+import { formatDate, getMeasureUnitBySensorType, showCo2 } from "../utils/helpers";
 import { SensorIcon } from "./SensorIcon";
 
 interface MeasureModalProps {
@@ -18,10 +18,10 @@ export const MeasureModal = ({ measure, onDismiss }: MeasureModalProps) => (
           <Text>Internas</Text>
           <HStack justify="between" w="100%">
             <VStack items="center">
-              <SensorIcon extraStyles={{ fontSize: 40 }} sensor={SensorType.Lighting} />
+              <SensorIcon extraStyles={{ fontSize: 40 }} sensor={SensorType.Temperature} />
               <Text>
                 {measure[Measures.InsideTemperature]}
-                {getMeasureUnitBySensorType(SensorType.Lighting)}
+                {getMeasureUnitBySensorType(SensorType.Temperature)}
               </Text>
             </VStack>
             <VStack items="center">
@@ -31,13 +31,15 @@ export const MeasureModal = ({ measure, onDismiss }: MeasureModalProps) => (
                 {getMeasureUnitBySensorType(SensorType.Humidity)}
               </Text>
             </VStack>
-            <VStack items="center">
-              <SensorIcon extraStyles={{ fontSize: 40 }} sensor={SensorType.Co2} />
-              <Text>
-                {measure[Measures.Co2]}
-                {getMeasureUnitBySensorType(SensorType.Co2)}
-              </Text>
-            </VStack>
+            {showCo2() && (
+              <VStack items="center">
+                <SensorIcon extraStyles={{ fontSize: 40 }} sensor={SensorType.Co2} />
+                <Text>
+                  {measure[Measures.Co2]}
+                  {getMeasureUnitBySensorType(SensorType.Co2)}
+                </Text>
+              </VStack>
+            )}
             <VStack items="center">
               <SensorIcon extraStyles={{ fontSize: 40 }} sensor={SensorType.SoilHumidity} />
               <Text>

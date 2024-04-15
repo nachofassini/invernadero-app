@@ -96,7 +96,7 @@ export const getDeviceActivationByDescription = (type?: ActivationType | null): 
       return "Alta humedad";
     case ActivationType.HighSoilHumidity:
       return "Alta humedad de Suelo";
-    case ActivationType.HighTemp:
+    case ActivationType.HighTemperature:
       return "Alta temperatura";
     case ActivationType.LowCo2:
       return "Bajo Co2";
@@ -106,7 +106,7 @@ export const getDeviceActivationByDescription = (type?: ActivationType | null): 
       return "Baja iluminación";
     case ActivationType.LowSoilHumidity:
       return "Baja humedad de suelo";
-    case ActivationType.LowTemp:
+    case ActivationType.LowTemperature:
       return "Baja temperatura";
     case ActivationType.Manual:
       return "Manual";
@@ -123,14 +123,14 @@ export const getDeviceActivationByDescriptionWithIcon = (type?: ActivationType |
     case ActivationType.HighCo2:
     case ActivationType.HighHumidity:
     case ActivationType.HighSoilHumidity:
-    case ActivationType.HighTemp:
+    case ActivationType.HighTemperature:
     case ActivationType.LowCo2:
       icon = "up";
       break;
     case ActivationType.LowHumidity:
     case ActivationType.LowLighting:
     case ActivationType.LowSoilHumidity:
-    case ActivationType.LowTemp:
+    case ActivationType.LowTemperature:
       icon = "down";
       break;
     case ActivationType.Manual:
@@ -146,8 +146,8 @@ export const getDeviceActivationByDescriptionWithIcon = (type?: ActivationType |
     case ActivationType.HighHumidity:
       measure = "Hum.";
       break;
-    case ActivationType.HighTemp:
-    case ActivationType.LowTemp:
+    case ActivationType.HighTemperature:
+    case ActivationType.LowTemperature:
       measure = "Temp.";
       break;
     case ActivationType.HighSoilHumidity:
@@ -195,3 +195,5 @@ export const useDeviceActivationOptions = (device: Device): { label: string; val
     }
   }, [device]);
 };
+
+export const showCo2 = (): boolean => process.env.EXPO_PUBLIC_HIDE_CO2 !== "true";

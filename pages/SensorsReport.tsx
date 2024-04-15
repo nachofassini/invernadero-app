@@ -1,6 +1,6 @@
 import { ActivityIndicator, Text } from "@react-native-material/core";
 import { MeasureDataFragment, Measures, SensorType, useGetLastMeasuresPaginatedQuery } from "../gql";
-import { formatDate, getMeasureUnitBySensorType } from "../utils/helpers";
+import { formatDate, getMeasureUnitBySensorType, showCo2 as shouldShowCo2 } from "../utils/helpers";
 import { ScrollableView } from "../components/ScrollableView";
 import { SensorIcon } from "../components/SensorIcon";
 import { DataTable } from "react-native-paper";
@@ -9,6 +9,8 @@ import groupBy from "lodash/groupBy";
 import { Dictionary } from "lodash";
 import { MeasureModal } from "../components/MeasureModal";
 import { common } from "../constants";
+
+const showCo2 = shouldShowCo2();
 
 export const SensorsReport = () => {
   const [measureDetails, setMeasureDetails] = useState<MeasureDataFragment>();
@@ -42,13 +44,13 @@ export const SensorsReport = () => {
         <DataTable>
           <DataTable.Header style={{ height: 20, borderTopWidth: 0.66, borderTopColor: "rgb(231, 224, 236)" }}>
             <DataTable.Title
-              style={{ marginLeft: 60, borderRightWidth: 1, maxWidth: 135, paddingTop: 0 }}
+              style={{ marginLeft: 75, borderRightWidth: 1, maxWidth: 135, paddingTop: 0 }}
               textStyle={{ textAlign: "center", width: "100%", height: 20 }}
             >
-              Internos
+              Externos
             </DataTable.Title>
             <DataTable.Title style={{ paddingTop: 0 }} textStyle={{ textAlign: "center", width: "100%", height: 20 }}>
-              Externos
+              Internos
             </DataTable.Title>
           </DataTable.Header>
           <DataTable.Header>
@@ -62,9 +64,14 @@ export const SensorsReport = () => {
             <DataTable.Title numeric>
               <SensorIcon extraStyles={{ fontSize: 25 }} sensor={SensorType.Humidity} />
             </DataTable.Title>
-            <DataTable.Title numeric>
-              <SensorIcon extraStyles={{ fontSize: 20 }} sensor={SensorType.Co2} />
+            <DataTable.Title numeric style={{ width: 16, flex: 0 }}>
+              |
             </DataTable.Title>
+            {showCo2 && (
+              <DataTable.Title numeric>
+                <SensorIcon extraStyles={{ fontSize: 20 }} sensor={SensorType.Co2} />
+              </DataTable.Title>
+            )}
             <DataTable.Title numeric>
               <SensorIcon extraStyles={{ fontSize: 20 }} sensor={SensorType.Temperature} />
             </DataTable.Title>
@@ -93,7 +100,10 @@ export const SensorsReport = () => {
                     <DataTable.Cell numeric>{getMeasureUnitBySensorType(SensorType.Lighting)}</DataTable.Cell>
                     <DataTable.Cell numeric>{getMeasureUnitBySensorType(SensorType.Temperature)}</DataTable.Cell>
                     <DataTable.Cell numeric>{getMeasureUnitBySensorType(SensorType.Humidity)}</DataTable.Cell>
-                    <DataTable.Cell numeric>{getMeasureUnitBySensorType(SensorType.Co2)}</DataTable.Cell>
+                    <DataTable.Cell numeric style={{ width: 16, flex: 0 }}>
+                      |
+                    </DataTable.Cell>
+                    {showCo2 && <DataTable.Cell numeric>{getMeasureUnitBySensorType(SensorType.Co2)}</DataTable.Cell>}
                     <DataTable.Cell numeric>{getMeasureUnitBySensorType(SensorType.Temperature)}</DataTable.Cell>
                     <DataTable.Cell numeric>{getMeasureUnitBySensorType(SensorType.Humidity)}</DataTable.Cell>
                     <DataTable.Cell numeric>{getMeasureUnitBySensorType(SensorType.SoilHumidity)}</DataTable.Cell>
@@ -108,7 +118,10 @@ export const SensorsReport = () => {
                       <DataTable.Cell numeric>{measure[Measures.Lighting]}</DataTable.Cell>
                       <DataTable.Cell numeric>{measure[Measures.OutsideTemperature]}</DataTable.Cell>
                       <DataTable.Cell numeric>{measure[Measures.OutsideHumidity]}</DataTable.Cell>
-                      <DataTable.Cell numeric>{measure[Measures.Co2]}</DataTable.Cell>
+                      <DataTable.Cell numeric style={{ width: 10, flex: 0 }}>
+                        |
+                      </DataTable.Cell>
+                      {showCo2 && <DataTable.Cell numeric>{measure[Measures.Co2]}</DataTable.Cell>}
                       <DataTable.Cell numeric>{measure[Measures.InsideTemperature]}</DataTable.Cell>
                       <DataTable.Cell numeric>{measure[Measures.InsideHumidity]}</DataTable.Cell>
                       <DataTable.Cell numeric>{measure[Measures.SoilHumidity]}</DataTable.Cell>

@@ -20,6 +20,7 @@ import {
 import { HomeNavProps } from "../types/navigation";
 import { Spinner } from "../components/Spinner";
 import { ScrollableView } from "../components/ScrollableView";
+import { showCo2 } from "../utils/helpers";
 
 export type MeasureUnit = "%" | "ºC" | "ppm" | "mm3" | "Hs";
 
@@ -175,12 +176,14 @@ export const Dashboard = () => {
                     styles={{ icon: styles.externalWeatherConditionIcon, value: styles.externalWeatherConditionValue }}
                   />
                   <VStack items="center">
-                    <SensorIndicator
-                      sensor={internalSensors?.[1]}
-                      value={lastMeasure?.[internalSensors?.[1]?.dataKey] ?? 0}
-                      onPress={setSelectedSensor}
-                      styles={{ icon: { fontSize: 40 }, value: styles.externalWeatherConditionValue }}
-                    />
+                    {showCo2() && (
+                      <SensorIndicator
+                        sensor={internalSensors?.[1]}
+                        value={lastMeasure?.[internalSensors?.[1]?.dataKey] ?? 0}
+                        onPress={setSelectedSensor}
+                        styles={{ icon: { fontSize: 40 }, value: styles.externalWeatherConditionValue }}
+                      />
+                    )}
 
                     <Icon name="home-thermometer-outline" color="#20eb60" style={{ fontSize: 200 }} />
 

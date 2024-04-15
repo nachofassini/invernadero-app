@@ -1009,6 +1009,8 @@ export type WeatherSettingsFragment = {
   maxHumidity: number;
   minCo2: number;
   maxCo2: number;
+  lightHours: number;
+  irrigation: number;
 };
 
 export type GetStageQueryVariables = Exact<{
@@ -1034,6 +1036,8 @@ export type GetStageQuery = {
     maxHumidity: number;
     minCo2: number;
     maxCo2: number;
+    lightHours: number;
+    irrigation: number;
     crop: { __typename?: "Crop"; id: string; name: string; active: boolean; activeSince?: any | null; day: number };
   };
 };
@@ -1061,6 +1065,8 @@ export type GetStagesQuery = {
     maxHumidity: number;
     minCo2: number;
     maxCo2: number;
+    lightHours: number;
+    irrigation: number;
     crop: { __typename?: "Crop"; id: string; name: string; active: boolean; activeSince?: any | null; day: number };
   }>;
 };
@@ -1088,6 +1094,8 @@ export type CreateOrUpdateStageMutation = {
     maxHumidity: number;
     minCo2: number;
     maxCo2: number;
+    lightHours: number;
+    irrigation: number;
   };
 };
 
@@ -1183,6 +1191,8 @@ export const WeatherSettingsFragmentDoc = gql`
     maxHumidity
     minCo2
     maxCo2
+    lightHours
+    irrigation
   }
 `;
 export const GetActivationDocument = gql`

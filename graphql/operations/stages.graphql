@@ -20,6 +20,8 @@ fragment WeatherSettings on Stage {
   maxHumidity
   minCo2
   maxCo2
+  lightHours
+  irrigation
 }
 
 query GetStage($id: ID!) {

@@ -4,12 +4,14 @@ import { Box, Button } from "@react-native-material/core";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { Input } from "./Input";
-import { GetStageQuery, Stage, StageInput } from "../gql";
+import { GetStageQuery, StageInput } from "../gql";
 import { useEffect } from "react";
 import { ApolloError } from "@apollo/client";
-import { setFormValidationErrors } from "../utils/helpers";
+import { setFormValidationErrors, showCo2 } from "../utils/helpers";
 
 type Range = { low: number; high: number };
+
+const showCO2 = showCo2();
 
 export type StageData = {
   id: string | null;
@@ -42,7 +44,7 @@ const validationSchema = yup
       .max(100, "El nombre de la etapa no debe ser mayor a ${max} caracteres"),
     temperature: yup.object({ low: yup.number().required(), high: yup.number().required() }),
     humidity: yup.object({ low: yup.number().required(), high: yup.number().required() }),
-    co2: yup.object({ low: yup.number().required(), high: yup.number().required() }),
+    co2: showCO2 ? yup.object({ low: yup.number().required(), high: yup.number().required() }) : yup.object(),
     lightHours: yup.number().required(),
     irrigation: yup.number().required(),
   })
@@ -118,7 +120,7 @@ export const StageForm = ({ stage, loading, onSubmit, error }: SageFormProps) =>
       />
       <RangeSlider control={control} name="temperature" label="Temperatura (ºC)" min={0} max={50} />
       <RangeSlider control={control} name="humidity" label="Humedad relativa (%)" min={0} max={100} />
-      <RangeSlider control={control} name="co2" label="Concentracion CO2 (ppm)" min={400} max={1200} />
+      {showCO2 && <RangeSlider control={control} name="co2" label="Concentracion CO2 (ppm)" min={400} max={1200} />}
       <RangeSlider control={control} name="lightHours" label="Luz diaria (Min. Hs.)" min={0} max={24} disableRange />
       <RangeSlider control={control} name="irrigation" label="Riego diario (mm3)" min={0} max={2000} disableRange />
 
