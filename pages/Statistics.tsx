@@ -39,23 +39,36 @@ const styles = StyleSheet.create({
 const MEASURE_FROM_LAST_N_DAYS = 20;
 
 export const Statistics = () => {
-  const { loading: loadingMeasuresAverage, data: { measuresAverageGroupedByDay } = {} } =
-    useGetMeasuresAverageGroupedByDayQuery({
-      variables: {
-        range: {
-          from: moment().subtract(20, "day").format("YYYY-MM-DD"),
-          to: moment().format("YYYY-MM-DD"),
-        },
+  const {
+    loading: loadingMeasuresAverage,
+    data: { measuresAverageGroupedByDay } = {},
+    refetch: refetchMeasuresAverageGroupedByDay,
+  } = useGetMeasuresAverageGroupedByDayQuery({
+    variables: {
+      range: {
+        from: moment().subtract(20, "day").format("YYYY-MM-DD"),
+        to: moment().format("YYYY-MM-DD"),
       },
-    });
+    },
+  });
 
-  const { loading: loadingLastActivationsGroupedByDevice, data: { activationsCountGroupedByDevice } = {} } =
-    useGetActivationsCountGroupedByDeviceQuery();
+  const {
+    loading: loadingLastActivationsGroupedByDevice,
+    data: { activationsCountGroupedByDevice } = {},
+    refetch: refetchActivationsCountGroupedByDevice,
+  } = useGetActivationsCountGroupedByDeviceQuery();
 
-  const { loading: loadingLastActivationsGroupedByType, data: { activationsCountGroupedByType } = {} } =
-    useGetActivationsCountGroupedByTypeQuery();
+  const {
+    loading: loadingLastActivationsGroupedByType,
+    data: { activationsCountGroupedByType } = {},
+    refetch: refetchActivationsCountGroupedByType,
+  } = useGetActivationsCountGroupedByTypeQuery();
 
-  const handleRefresh = () => {};
+  const handleRefresh = () => {
+    refetchMeasuresAverageGroupedByDay();
+    refetchActivationsCountGroupedByDevice();
+    refetchActivationsCountGroupedByType();
+  };
 
   return (
     <ScrollableView loading={false} onRefresh={handleRefresh}>
