@@ -100,7 +100,7 @@ export const PlanModal = ({ onDismiss, crop }: PlanModalProps) => {
             <Button onPress={handleEditStage} title="Modificar etapa" color="secondary" />
             <Button onPress={onDismiss} title="Cerrar" />
           </HStack>
-          <Button loading={loading} onPress={() => deactivateCrop()} title="Detener" color="error" />
+          <Button loading={loading} onPress={() => deactivateCrop()} title="Desactivar" color="error" />
         </VStack>
       </DialogActions>
     </Dialog>

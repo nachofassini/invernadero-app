@@ -39,7 +39,7 @@ export const CropFormModal = ({ defaultValues, onDismiss }: CropFormModalProps) 
 
   const [creteOrUpdate, { loading }] = useCreateOrUpdateCropMutation({
     onCompleted: onDismiss,
-    refetchQueries: ["GetCrops"],
+    refetchQueries: ["GetCrops", "GetActiveCrop"],
     onError: (error) => setFormValidationErrors(error, setError),
   });
   const [deleteFn, { loading: deleting }] = useDeleteCropMutation({

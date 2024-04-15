@@ -64,11 +64,13 @@ export const Statistics = () => {
           <Text style={styles.cardTitle}>Temperatura promedio ultimos {MEASURE_FROM_LAST_N_DAYS} días</Text>
           {loadingMeasuresAverage ? (
             <ActivityIndicator color="green" />
+          ) : !measuresAverageGroupedByDay?.length ? (
+            <Text style={{ textAlign: "center" }}>Sin datos</Text>
           ) : (
             <LineChart
               data={{
                 labels: measuresAverageGroupedByDay?.map((item) => formatDate(item.date, "D/M")) || [],
-                datasets: [{ data: measuresAverageGroupedByDay?.map((item) => item.insideTemperature) || [] }],
+                datasets: [{ data: measuresAverageGroupedByDay?.map((item) => item.insideTemperature ?? 0) || [] }],
               }}
               width={Dimensions.get("screen").width - 60}
               height={240}
@@ -94,11 +96,13 @@ export const Statistics = () => {
           <Text style={styles.cardTitle}>Humedad promedio ultimos {MEASURE_FROM_LAST_N_DAYS} días</Text>
           {loadingMeasuresAverage ? (
             <ActivityIndicator color="green" />
+          ) : !measuresAverageGroupedByDay?.length ? (
+            <Text style={{ textAlign: "center" }}>Sin datos</Text>
           ) : (
             <LineChart
               data={{
                 labels: measuresAverageGroupedByDay?.map((item) => formatDate(item.date, "D/M")) || [],
-                datasets: [{ data: measuresAverageGroupedByDay?.map((item) => item.insideHumidity) || [] }],
+                datasets: [{ data: measuresAverageGroupedByDay?.map((item) => item.insideHumidity ?? 0) || [] }],
               }}
               width={Dimensions.get("screen").width - 60}
               height={240}
@@ -124,11 +128,13 @@ export const Statistics = () => {
           <Text style={styles.cardTitle}>Co2 promedio ultimos {MEASURE_FROM_LAST_N_DAYS} días</Text>
           {loadingMeasuresAverage ? (
             <ActivityIndicator color="green" />
+          ) : !measuresAverageGroupedByDay?.length ? (
+            <Text style={{ textAlign: "center" }}>Sin datos</Text>
           ) : (
             <LineChart
               data={{
                 labels: measuresAverageGroupedByDay?.map((item) => formatDate(item.date, "D/M")) || [],
-                datasets: [{ data: measuresAverageGroupedByDay?.map((item) => item.co2) || [] }],
+                datasets: [{ data: measuresAverageGroupedByDay?.map((item) => item.co2 ?? 0) || [] }],
               }}
               width={Dimensions.get("screen").width - 60}
               height={240}
@@ -151,9 +157,11 @@ export const Statistics = () => {
         </Surface>
 
         <Surface style={styles.card}>
-          <Text style={styles.cardTitle}>Luz promedio ultimos {MEASURE_FROM_LAST_N_DAYS} días</Text>
+          <Text style={styles.cardTitle}>Luz promedio últimos {MEASURE_FROM_LAST_N_DAYS} días</Text>
           {loadingMeasuresAverage ? (
             <ActivityIndicator color="green" />
+          ) : !measuresAverageGroupedByDay?.length ? (
+            <Text style={{ textAlign: "center" }}>Sin datos</Text>
           ) : (
             <LineChart
               data={{
@@ -181,9 +189,11 @@ export const Statistics = () => {
         </Surface>
 
         <Surface style={styles.card}>
-          <Text style={styles.cardTitle}>Ultimas 100 activaciones</Text>
+          <Text style={styles.cardTitle}>Últimas 100 activaciones</Text>
           {loadingLastActivationsGroupedByDevice ? (
             <ActivityIndicator color="green" />
+          ) : !activationsCountGroupedByDevice?.length ? (
+            <Text style={{ textAlign: "center" }}>Sin datos</Text>
           ) : (
             <PieChart
               data={
@@ -207,9 +217,11 @@ export const Statistics = () => {
         </Surface>
 
         <Surface style={styles.card}>
-          <Text style={styles.cardTitle}>Motivo ultimas 100 activaciones</Text>
+          <Text style={styles.cardTitle}>Motivo últimas 100 activaciones</Text>
           {loadingLastActivationsGroupedByType ? (
             <ActivityIndicator color="green" />
+          ) : !activationsCountGroupedByType?.length ? (
+            <Text style={{ textAlign: "center" }}>Sin datos</Text>
           ) : (
             <PieChart
               data={

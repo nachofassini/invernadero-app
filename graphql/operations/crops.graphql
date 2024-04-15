@@ -44,7 +44,9 @@ mutation ActivateCrop($id: ID!) {
 }
 
 mutation DeactivateCrop {
-  deactivateCrop
+  deactivateCrop {
+    ...CropBasicData
+  }
 }
 
 mutation CreateOrUpdateCrop($data: CropInput!) {

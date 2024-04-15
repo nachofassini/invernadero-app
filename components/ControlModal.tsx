@@ -24,10 +24,11 @@ import { formatDate, getDeviceName, useDeviceActivationOptions } from "../utils/
 
 interface ControlModalProps {
   control: Control;
+  refetching: boolean;
   onDismiss: () => void;
 }
 
-export const ControlModal = ({ control, onDismiss }: ControlModalProps) => {
+export const ControlModal = ({ control, onDismiss, refetching }: ControlModalProps) => {
   const [open, setOpen] = useState(false);
   const [activationAmount, setActivationAmount] = useState<number>(0);
   const activationOptions = useDeviceActivationOptions(control.type);
@@ -82,13 +83,19 @@ export const ControlModal = ({ control, onDismiss }: ControlModalProps) => {
           <VStack spacing={8} style={{ marginTop: 20 }}>
             <HStack justify="between">
               <Text variant="h6">Estado:</Text>
-              <Badge
-                label={lastActivation?.enabled ? "On" : "Off"}
-                color={lastActivation?.enabled ? "secondary" : "primary"}
-              />
+              {refetching ? (
+                <ActivityIndicator color="green" />
+              ) : (
+                <Badge
+                  label={lastActivation?.enabled ? "On" : "Off"}
+                  color={lastActivation?.enabled ? "secondary" : "primary"}
+                />
+              )}
             </HStack>
 
-            {lastActivation?.enabled ? (
+            {refetching ? (
+              <ActivityIndicator color="green" />
+            ) : lastActivation?.enabled ? (
               <>
                 <Text>Activo desde: {formatDate(lastActivation?.createdAt, "MM/DD HH:mm:ss")}</Text>
                 <Button

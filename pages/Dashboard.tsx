@@ -52,14 +52,19 @@ export const Dashboard = () => {
   const toggleShowPlanModal = () => setShowPlanModal((prevVal) => !prevVal);
   const toggleShowChangePlanModal = () => setShowChangePlanModal((prevVal) => !prevVal);
 
-  const { data: { activeCrop } = {} } = useGetActiveCropQuery();
+  const { data: { activeCrop } = {}, loading: loadingActiveCrop } = useGetActiveCropQuery({
+    notifyOnNetworkStatusChange: true,
+  });
   const {
     data: { lastMeasure } = {},
     loading: refreshing,
     error,
     refetch,
   } = useGetLastMeasureQuery({ pollInterval: 10000 });
-  const { data: { enabledDevices } = {} } = useGetEnabledDevicesQuery({ pollInterval: 10000 });
+  const { data: { enabledDevices } = {}, loading: fetchingEnabledDevices } = useGetEnabledDevicesQuery({
+    pollInterval: 10000,
+    notifyOnNetworkStatusChange: true,
+  });
 
   useEffect(() => {
     if (setOptions) {
@@ -147,7 +152,7 @@ export const Dashboard = () => {
                 <SensorIndicator
                   key={index}
                   sensor={sensor}
-                  value={lastMeasure[sensor.dataKey]}
+                  value={lastMeasure?.[sensor.dataKey] ?? 0}
                   onPress={setSelectedSensor}
                   styles={{
                     icon: { marginTop: 5 },
@@ -164,15 +169,15 @@ export const Dashboard = () => {
               <VStack justify="around" items="center" style={{ paddingVertical: 20 }}>
                 <HStack justify="between" items="center">
                   <SensorIndicator
-                    sensor={internalSensors[0]}
-                    value={lastMeasure[internalSensors[0].dataKey]}
+                    sensor={internalSensors?.[0]}
+                    value={lastMeasure?.[internalSensors?.[0]?.dataKey] ?? 0}
                     onPress={setSelectedSensor}
                     styles={{ icon: styles.externalWeatherConditionIcon, value: styles.externalWeatherConditionValue }}
                   />
                   <VStack items="center">
                     <SensorIndicator
-                      sensor={internalSensors[1]}
-                      value={lastMeasure[internalSensors[1].dataKey]}
+                      sensor={internalSensors?.[1]}
+                      value={lastMeasure?.[internalSensors?.[1]?.dataKey] ?? 0}
                       onPress={setSelectedSensor}
                       styles={{ icon: { fontSize: 40 }, value: styles.externalWeatherConditionValue }}
                     />
@@ -181,15 +186,15 @@ export const Dashboard = () => {
 
                     <SensorIndicator
                       order="reverse"
-                      sensor={internalSensors[2]}
-                      value={lastMeasure[internalSensors[2].dataKey]}
+                      sensor={internalSensors?.[2]}
+                      value={lastMeasure?.[internalSensors?.[2]?.dataKey] ?? 0}
                       onPress={setSelectedSensor}
                       styles={{ icon: { fontSize: 40 }, value: styles.externalWeatherConditionValue }}
                     />
                   </VStack>
                   <SensorIndicator
-                    sensor={internalSensors[3]}
-                    value={lastMeasure[internalSensors[3].dataKey]}
+                    sensor={internalSensors?.[3]}
+                    value={lastMeasure?.[internalSensors?.[3]?.dataKey] ?? 0}
                     onPress={setSelectedSensor}
                     styles={{ icon: styles.externalWeatherConditionIcon, value: styles.externalWeatherConditionValue }}
                   />
@@ -211,9 +216,21 @@ export const Dashboard = () => {
         </VStack>
       </ScrollableView>
       {selectedSensor && <SensorModal sensor={selectedSensor} onDismiss={() => setSelectedSensor(null)} />}
-      {selectedControl && <ControlModal control={selectedControl} onDismiss={() => setSelectedControl(null)} />}
+      {selectedControl && (
+        <ControlModal
+          refetching={fetchingEnabledDevices}
+          control={selectedControl}
+          onDismiss={() => setSelectedControl(null)}
+        />
+      )}
       {activeCrop && showPlanModal && <PlanModal crop={activeCrop} onDismiss={toggleShowPlanModal} />}
-      {showChangePlanModal && <ChangePlanModal onDismiss={toggleShowChangePlanModal} />}
+      {showChangePlanModal && (
+        <ChangePlanModal
+          loadingActiveCrop={loadingActiveCrop}
+          activeCrop={activeCrop}
+          onDismiss={toggleShowChangePlanModal}
+        />
+      )}
     </>
   );
 };

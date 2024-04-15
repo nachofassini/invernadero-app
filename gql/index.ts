@@ -54,12 +54,12 @@ export enum ActivationType {
   HighCo2 = "high_co2",
   HighHumidity = "high_humidity",
   HighSoilHumidity = "high_soil_humidity",
-  HighTemp = "high_temp",
+  HighTemperature = "high_temperature",
   LowCo2 = "low_co2",
   LowHumidity = "low_humidity",
   LowLighting = "low_lighting",
   LowSoilHumidity = "low_soil_humidity",
-  LowTemp = "low_temp",
+  LowTemperature = "low_temperature",
   Manual = "manual",
 }
 
@@ -132,9 +132,9 @@ export enum DeviceMeasureUnits {
 export type Measure = Sensors & {
   __typename?: "Measure";
   /** Co2 ppm */
-  co2: Scalars["Float"];
+  co2?: Maybe<Scalars["Float"]>;
   /** Electricity consumption. */
-  consumption: Scalars["Float"];
+  consumption?: Maybe<Scalars["Float"]>;
   /** When the measure was taken */
   createdAt: Scalars["DateTime"];
   /** Unique primary key. */
@@ -167,9 +167,9 @@ export type MeasurePaginator = {
 export type MeasureStatistic = Sensors & {
   __typename?: "MeasureStatistic";
   /** Co2 ppm */
-  co2: Scalars["Float"];
+  co2?: Maybe<Scalars["Float"]>;
   /** Electricity consumption. */
-  consumption: Scalars["Float"];
+  consumption?: Maybe<Scalars["Float"]>;
   date: Scalars["DateTime"];
   /** Greenhouse humidity */
   insideHumidity: Scalars["Float"];
@@ -209,7 +209,7 @@ export type Mutation = {
   __typename?: "Mutation";
   activateCrop: Crop;
   activateDevice: Activation;
-  deactivateCrop: Scalars["Int"];
+  deactivateCrop: Crop;
   deactivateDevice: Scalars["Int"];
   deleteCrop: Crop;
   deleteStage: Stage;
@@ -473,8 +473,8 @@ export enum SensorType {
 
 export type Sensors = {
   /** Co2 ppm */
-  co2: Scalars["Float"];
-  consumption: Scalars["Float"];
+  co2?: Maybe<Scalars["Float"]>;
+  consumption?: Maybe<Scalars["Float"]>;
   /** Greenhouse humidity */
   insideHumidity: Scalars["Float"];
   /** Greenhouse temperature */
@@ -832,7 +832,17 @@ export type ActivateCropMutation = {
 
 export type DeactivateCropMutationVariables = Exact<{ [key: string]: never }>;
 
-export type DeactivateCropMutation = { __typename?: "Mutation"; deactivateCrop: number };
+export type DeactivateCropMutation = {
+  __typename?: "Mutation";
+  deactivateCrop: {
+    __typename?: "Crop";
+    id: string;
+    name: string;
+    active: boolean;
+    activeSince?: any | null;
+    day: number;
+  };
+};
 
 export type CreateOrUpdateCropMutationVariables = Exact<{
   data: CropInput;
@@ -869,13 +879,13 @@ export type MeasureDataFragment = {
   id: string;
   createdAt: any;
   updatedAt: any;
-  consumption: number;
+  consumption?: number | null;
   insideTemperature: number;
   outsideTemperature: number;
   insideHumidity: number;
   outsideHumidity: number;
   soilHumidity: number;
-  co2: number;
+  co2?: number | null;
   lighting: number;
 };
 
@@ -888,13 +898,13 @@ export type GetLastMeasureQuery = {
     id: string;
     createdAt: any;
     updatedAt: any;
-    consumption: number;
+    consumption?: number | null;
     insideTemperature: number;
     outsideTemperature: number;
     insideHumidity: number;
     outsideHumidity: number;
     soilHumidity: number;
-    co2: number;
+    co2?: number | null;
     lighting: number;
   };
 };
@@ -911,13 +921,13 @@ export type GetLastMeasuresQuery = {
     id: string;
     createdAt: any;
     updatedAt: any;
-    consumption: number;
+    consumption?: number | null;
     insideTemperature: number;
     outsideTemperature: number;
     insideHumidity: number;
     outsideHumidity: number;
     soilHumidity: number;
-    co2: number;
+    co2?: number | null;
     lighting: number;
   }>;
 };
@@ -947,13 +957,13 @@ export type GetLastMeasuresPaginatedQuery = {
       id: string;
       createdAt: any;
       updatedAt: any;
-      consumption: number;
+      consumption?: number | null;
       insideTemperature: number;
       outsideTemperature: number;
       insideHumidity: number;
       outsideHumidity: number;
       soilHumidity: number;
-      co2: number;
+      co2?: number | null;
       lighting: number;
     }>;
   } | null;
@@ -973,7 +983,7 @@ export type GetMeasuresAverageGroupedByDayQuery = {
     insideHumidity: number;
     outsideHumidity: number;
     soilHumidity: number;
-    co2: number;
+    co2?: number | null;
     lighting: number;
   }>;
 };
@@ -1688,8 +1698,11 @@ export type ActivateCropMutationOptions = Apollo.BaseMutationOptions<
 >;
 export const DeactivateCropDocument = gql`
   mutation DeactivateCrop {
-    deactivateCrop
+    deactivateCrop {
+      ...CropBasicData
+    }
   }
+  ${CropBasicDataFragmentDoc}
 `;
 export type DeactivateCropMutationFn = Apollo.MutationFunction<DeactivateCropMutation, DeactivateCropMutationVariables>;
 
