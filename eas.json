@@ -36,6 +36,11 @@
   },
   "submit": {
     "production": {
+      "android": {
+        "serviceAccountKeyPath": "/Users/nacho/Documents/invernadero-410800-c96209552b40.json",
+        "track": "production",
+        "applicationId": "4972640191900238592"
+      },
       "ios": {
         "appleId": "nachofassini@gmail.com",
         "sku": "invernadero-app",
