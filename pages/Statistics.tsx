@@ -108,7 +108,7 @@ export const Statistics = () => {
                 backgroundColor: "#e26a00",
                 backgroundGradientFrom: "#fb8c00",
                 backgroundGradientTo: "#ffa726",
-                decimalPlaces: 0,
+                decimalPlaces: 1,
                 color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
                 style: {
                   borderRadius: 16,
@@ -140,7 +140,7 @@ export const Statistics = () => {
                 backgroundColor: "#e26a00",
                 backgroundGradientFrom: "#fb8c00",
                 backgroundGradientTo: "#ffa726",
-                decimalPlaces: 0,
+                decimalPlaces: 1,
                 color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
                 style: {
                   borderRadius: 16,
@@ -173,7 +173,7 @@ export const Statistics = () => {
                   backgroundColor: "#e26a00",
                   backgroundGradientFrom: "#fb8c00",
                   backgroundGradientTo: "#ffa726",
-                  decimalPlaces: 0,
+                  decimalPlaces: 1,
                   color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
                   style: {
                     borderRadius: 16,
@@ -206,7 +206,7 @@ export const Statistics = () => {
                 backgroundColor: "#e26a00",
                 backgroundGradientFrom: "#fb8c00",
                 backgroundGradientTo: "#ffa726",
-                decimalPlaces: 0,
+                decimalPlaces: 1,
                 color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
                 style: {
                   borderRadius: 16,
@@ -238,7 +238,7 @@ export const Statistics = () => {
                 backgroundColor: "#e26a00",
                 backgroundGradientFrom: "#fb8c00",
                 backgroundGradientTo: "#ffa726",
-                decimalPlaces: 0,
+                decimalPlaces: 1,
                 color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
                 style: {
                   borderRadius: 16,
@@ -270,7 +270,7 @@ export const Statistics = () => {
                 backgroundColor: "#e26a00",
                 backgroundGradientFrom: "#fb8c00",
                 backgroundGradientTo: "#ffa726",
-                decimalPlaces: 0,
+                decimalPlaces: 1,
                 color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
                 style: {
                   borderRadius: 16,
@@ -303,7 +303,7 @@ export const Statistics = () => {
                   backgroundColor: "#e26a00",
                   backgroundGradientFrom: "#fb8c00",
                   backgroundGradientTo: "#ffa726",
-                  decimalPlaces: 0,
+                  decimalPlaces: 1,
                   color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
                   style: {
                     borderRadius: 16,
@@ -336,7 +336,7 @@ export const Statistics = () => {
                 backgroundColor: "#e26a00",
                 backgroundGradientFrom: "#fb8c00",
                 backgroundGradientTo: "#ffa726",
-                decimalPlaces: 0,
+                decimalPlaces: 1,
                 color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
                 style: {
                   borderRadius: 16,
