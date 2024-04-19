@@ -7,7 +7,7 @@
   "build": {
     "base": {
       "env": {
-        "EXPO_PUBLIC_API_URL": "https://invernadero-936727412860.herokuapp.com"
+        "EXPO_PUBLIC_API_URL": "https://prepared-suitably-jay.ngrok-free.app"
       },
       "channel": "base"
     },
