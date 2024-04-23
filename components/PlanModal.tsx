@@ -12,6 +12,7 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import { GetActiveCropQuery, useDeactivateCropMutation } from "../gql";
 import { HomeNavProps } from "../types/navigation";
+import { formatDate } from "../utils/helpers";
 
 interface PlanModalProps {
   onDismiss: () => void;
@@ -47,22 +48,43 @@ export const PlanModal = ({ onDismiss, crop }: PlanModalProps) => {
     <Dialog visible onDismiss={onDismiss}>
       <DialogHeader
         title={() => (
-          <HStack justify="between" items="center" style={{ width: "100%" }}>
-            <Text variant="h4">{name}</Text>
-            <Text variant="h5">
-              Etapa {activeStage.order}/{stageCount}
-            </Text>
+          <HStack justify="between" items="center" style={{ width: "100%", marginTop: 10 }}>
+            <VStack>
+              <Text>Cultivo:</Text>
+              <Text variant="h4">{name}</Text>
+            </VStack>
+            <VStack items="end">
+              <Text variant="h6">
+                Día {crop.day}/{crop.days}
+              </Text>
+              <Text variant="h6">
+                Etapa {activeStage.order}/{stageCount}
+              </Text>
+            </VStack>
           </HStack>
         )}
       />
       <DialogContent>
-        <HStack justify="between" items="center">
-          <Text variant="h5">{activeStage.name}</Text>
-          <Text variant="h5">
-            Dia {activeStage.day}/{activeStage.days}
-          </Text>
-        </HStack>
-        <VStack spacing={8} style={{ marginVertical: 20 }}>
+        <VStack
+          items="center"
+          spacing={4}
+          style={{ marginVertical: 10, paddingVertical: 4, paddingHorizontal: 4, borderWidth: 0.3, borderRadius: 8 }}
+        >
+          <Text variant="h6">Etapa: {activeStage.name}</Text>
+          <HStack justify="between" style={{ width: "100%" }}>
+            <VStack>
+              <Text>Inicio: {formatDate(activeStage.activeFrom, "DD/MM/YY HH:mm")}</Text>
+              <Text>Fin: {formatDate(activeStage.activeTo, "DD/MM/YY HH:mm")}</Text>
+            </VStack>
+            <VStack>
+              <Text>Dia</Text>
+              <Text>
+                {activeStage.day}/{activeStage.days}
+              </Text>
+            </VStack>
+          </HStack>
+        </VStack>
+        <VStack spacing={8} style={{ marginVertical: 10 }}>
           <Text variant="h6">Valores esperados</Text>
           <VStack spacing={8} divider={<Divider />}>
             <VStack>

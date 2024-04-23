@@ -62,5 +62,7 @@ mutation ActivateDevice($device: Device!, $amount: Float!) {
 }
 
 mutation deactivateDevice($device: Device!) {
-  deactivateDevice(device: $device)
+  deactivateDevice(device: $device) {
+    ...ActivationData
+  }
 }

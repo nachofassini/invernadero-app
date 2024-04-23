@@ -17,6 +17,8 @@ query GetActiveCrop {
       order
       day
       days
+      activeFrom
+      activeTo
       minTemperature
       maxTemperature
       minHumidity

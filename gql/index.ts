@@ -22,7 +22,7 @@ export type Activation = {
   /** Activation trigger motive */
   activatedBy?: Maybe<ActivationType>;
   /** Active end date */
-  activeUntil?: Maybe<Scalars["Date"]>;
+  activeUntil?: Maybe<Scalars["DateTime"]>;
   /** value of the amount of water/ minutes of vent / hs of light delivered / etc... */
   amount: Scalars["Float"];
   createdAt: Scalars["DateTime"];
@@ -210,7 +210,7 @@ export type Mutation = {
   activateCrop: Crop;
   activateDevice: Activation;
   deactivateCrop: Crop;
-  deactivateDevice: Scalars["Int"];
+  deactivateDevice: Activation;
   deleteCrop: Crop;
   deleteStage: Stage;
   upsertCrop: Crop;
@@ -518,6 +518,10 @@ export type Stage = WeatherSetup & {
   __typename?: "Stage";
   /** Current stage status */
   active: Scalars["Boolean"];
+  /** Retrieves the date where the stage will became active */
+  activeFrom?: Maybe<Scalars["DateTime"]>;
+  /** Retrieves the date where the stage will became inactive */
+  activeTo?: Maybe<Scalars["DateTime"]>;
   createdAt: Scalars["DateTime"];
   crop: Crop;
   cropId: Scalars["Int"];
@@ -755,7 +759,22 @@ export type DeactivateDeviceMutationVariables = Exact<{
   device: Device;
 }>;
 
-export type DeactivateDeviceMutation = { __typename?: "Mutation"; deactivateDevice: number };
+export type DeactivateDeviceMutation = {
+  __typename?: "Mutation";
+  deactivateDevice: {
+    __typename?: "Activation";
+    id: string;
+    activatedBy?: ActivationType | null;
+    createdAt: any;
+    updatedAt: any;
+    activeUntil?: any | null;
+    enabled: boolean;
+    device: Device;
+    amount: number;
+    measureUnit?: MeasureUnit | null;
+    measureId?: string | null;
+  };
+};
 
 export type CropBasicDataFragment = {
   __typename?: "Crop";
@@ -786,6 +805,8 @@ export type GetActiveCropQuery = {
       order: number;
       day?: number | null;
       days: number;
+      activeFrom?: any | null;
+      activeTo?: any | null;
       minTemperature: number;
       maxTemperature: number;
       minHumidity: number;
@@ -1553,8 +1574,11 @@ export type ActivateDeviceMutationOptions = Apollo.BaseMutationOptions<
 >;
 export const DeactivateDeviceDocument = gql`
   mutation deactivateDevice($device: Device!) {
-    deactivateDevice(device: $device)
+    deactivateDevice(device: $device) {
+      ...ActivationData
+    }
   }
+  ${ActivationDataFragmentDoc}
 `;
 export type DeactivateDeviceMutationFn = Apollo.MutationFunction<
   DeactivateDeviceMutation,
@@ -1605,6 +1629,8 @@ export const GetActiveCropDocument = gql`
         order
         day
         days
+        activeFrom
+        activeTo
         minTemperature
         maxTemperature
         minHumidity

@@ -62,10 +62,19 @@ export const Dashboard = () => {
     error,
     refetch,
   } = useGetLastMeasureQuery({ pollInterval: 10000 });
-  const { data: { enabledDevices } = {}, loading: fetchingEnabledDevices } = useGetEnabledDevicesQuery({
+  const {
+    data: { enabledDevices } = {},
+    loading: fetchingEnabledDevices,
+    refetch: refetchEnabledDevices,
+  } = useGetEnabledDevicesQuery({
     pollInterval: 10000,
     notifyOnNetworkStatusChange: true,
   });
+
+  const handleRefresh = () => {
+    refetch();
+    refetchEnabledDevices();
+  };
 
   useEffect(() => {
     if (setOptions) {
@@ -134,7 +143,7 @@ export const Dashboard = () => {
     return (
       <View style={{ padding: 20 }}>
         <Text style={{ padding: 20, textAlign: "center" }}>No se pudo establecer conexiön con el invernadero</Text>
-        <Button onPress={() => refetch()} title="Intentar nuevamente" color="secondary" />
+        <Button onPress={() => handleRefresh()} title="Intentar nuevamente" color="secondary" />
       </View>
     );
   }
@@ -142,7 +151,7 @@ export const Dashboard = () => {
 
   return (
     <>
-      <ScrollableView loading={refreshing} onRefresh={refetch}>
+      <ScrollableView loading={refreshing} onRefresh={handleRefresh}>
         <VStack justify="between" style={{ minHeight: "100%" }}>
           <Surface style={{ padding: 5, margin: 5 }} elevation={2}>
             <Text variant="h5" style={{ textAlign: "center" }}>
