@@ -24,11 +24,10 @@ import { formatDate, getDeviceName, useDeviceActivationOptions } from "../utils/
 
 interface ControlModalProps {
   control: Control;
-  refetching: boolean;
   onDismiss: () => void;
 }
 
-export const ControlModal = ({ control, onDismiss, refetching }: ControlModalProps) => {
+export const ControlModal = ({ control, onDismiss }: ControlModalProps) => {
   const [open, setOpen] = useState(false);
   const [activationAmount, setActivationAmount] = useState<number>(0);
   const activationOptions = useDeviceActivationOptions(control.type);
@@ -36,6 +35,8 @@ export const ControlModal = ({ control, onDismiss, refetching }: ControlModalPro
   const { data: { activations } = {}, loading } = useGetActivationsQuery({
     fetchPolicy: "network-only",
     variables: { device: control.type },
+    pollInterval: 10000,
+    notifyOnNetworkStatusChange: true,
   });
 
   const [activateDevice, { loading: activating }] = useActivateDeviceMutation({
@@ -60,7 +61,7 @@ export const ControlModal = ({ control, onDismiss, refetching }: ControlModalPro
       <DialogContent>
         <VStack spacing={8}>
           <Text variant="h6">Ultimas activaciones:</Text>
-          {loading ? (
+          {loading && !lastActivation ? (
             <ActivityIndicator color="green" />
           ) : (
             <VStack>
@@ -79,11 +80,11 @@ export const ControlModal = ({ control, onDismiss, refetching }: ControlModalPro
           )}
         </VStack>
 
-        {!loading && (
+        {(!loading || lastActivation) && (
           <VStack spacing={8} style={{ marginTop: 20 }}>
             <HStack justify="between">
               <Text variant="h6">Estado:</Text>
-              {refetching ? (
+              {loading ? (
                 <ActivityIndicator color="green" />
               ) : (
                 <Badge
@@ -93,13 +94,11 @@ export const ControlModal = ({ control, onDismiss, refetching }: ControlModalPro
               )}
             </HStack>
 
-            {refetching ? (
-              <ActivityIndicator color="green" />
-            ) : lastActivation?.enabled ? (
+            {lastActivation?.enabled ? (
               <>
                 <Text>Activo desde: {formatDate(lastActivation?.createdAt, "MM/DD HH:mm:ss")}</Text>
                 <Button
-                  loading={deactivating}
+                  loading={deactivating || loading}
                   title="Detener"
                   style={{ marginTop: 10 }}
                   color="error"
@@ -121,7 +120,8 @@ export const ControlModal = ({ control, onDismiss, refetching }: ControlModalPro
                   />
                 </HStack>
                 <Button
-                  loading={activating}
+                  disabled={!activationAmount}
+                  loading={activating || loading}
                   title="Activar"
                   style={{ marginTop: 20, zIndex: -1 }}
                   color="secondary"

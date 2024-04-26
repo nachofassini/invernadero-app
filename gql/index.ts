@@ -24,8 +24,10 @@ export type Activation = {
   /** Active end date */
   activeUntil?: Maybe<Scalars["DateTime"]>;
   /** value of the amount of water/ minutes of vent / hs of light delivered / etc... */
-  amount: Scalars["Float"];
+  amount?: Maybe<Scalars["Float"]>;
   createdAt: Scalars["DateTime"];
+  /** Deviation detected */
+  deviation?: Maybe<Deviation>;
   /** device name */
   device: Device;
   /** Current status */
@@ -113,6 +115,14 @@ export type DateRange = {
 export type DateTimeRange = {
   from: Scalars["DateTime"];
   to: Scalars["DateTime"];
+};
+
+export type Deviation = {
+  __typename?: "Deviation";
+  /** Expected value */
+  expected: Scalars["Float"];
+  /** Obtained value */
+  obtained: Scalars["Float"];
 };
 
 export enum Device {
@@ -622,7 +632,7 @@ export type ActivationDataFragment = {
   activeUntil?: any | null;
   enabled: boolean;
   device: Device;
-  amount: number;
+  amount?: number | null;
   measureUnit?: MeasureUnit | null;
   measureId?: string | null;
 };
@@ -642,7 +652,7 @@ export type GetActivationQuery = {
     activeUntil?: any | null;
     enabled: boolean;
     device: Device;
-    amount: number;
+    amount?: number | null;
     measureUnit?: MeasureUnit | null;
     measureId?: string | null;
   };
@@ -665,7 +675,7 @@ export type GetActivationsQuery = {
     activeUntil?: any | null;
     enabled: boolean;
     device: Device;
-    amount: number;
+    amount?: number | null;
     measureUnit?: MeasureUnit | null;
     measureId?: string | null;
   }>;
@@ -701,7 +711,7 @@ export type GetLastActivationsPaginatedQuery = {
       activeUntil?: any | null;
       enabled: boolean;
       device: Device;
-      amount: number;
+      amount?: number | null;
       measureUnit?: MeasureUnit | null;
       measureId?: string | null;
     }>;
@@ -712,7 +722,19 @@ export type GetEnabledDevicesQueryVariables = Exact<{ [key: string]: never }>;
 
 export type GetEnabledDevicesQuery = {
   __typename?: "Query";
-  enabledDevices: Array<{ __typename?: "Activation"; id: string; device: Device }>;
+  enabledDevices: Array<{
+    __typename?: "Activation";
+    id: string;
+    activatedBy?: ActivationType | null;
+    createdAt: any;
+    updatedAt: any;
+    activeUntil?: any | null;
+    enabled: boolean;
+    device: Device;
+    amount?: number | null;
+    measureUnit?: MeasureUnit | null;
+    measureId?: string | null;
+  }>;
 };
 
 export type GetActivationsCountGroupedByDeviceQueryVariables = Exact<{ [key: string]: never }>;
@@ -749,7 +771,7 @@ export type ActivateDeviceMutation = {
     activeUntil?: any | null;
     enabled: boolean;
     device: Device;
-    amount: number;
+    amount?: number | null;
     measureUnit?: MeasureUnit | null;
     measureId?: string | null;
   };
@@ -770,7 +792,7 @@ export type DeactivateDeviceMutation = {
     activeUntil?: any | null;
     enabled: boolean;
     device: Device;
-    amount: number;
+    amount?: number | null;
     measureUnit?: MeasureUnit | null;
     measureId?: string | null;
   };
@@ -1377,10 +1399,10 @@ export type GetLastActivationsPaginatedQueryResult = Apollo.QueryResult<
 export const GetEnabledDevicesDocument = gql`
   query GetEnabledDevices {
     enabledDevices {
-      id
-      device
+      ...ActivationData
     }
   }
+  ${ActivationDataFragmentDoc}
 `;
 
 /**

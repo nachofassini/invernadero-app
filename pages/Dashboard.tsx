@@ -220,21 +220,15 @@ export const Dashboard = () => {
               Dispositivos de control de clima
             </Text>
             <HStack justify="between" style={{ marginTop: 10 }}>
-              {controls.map((control, index) => (
-                <ControlIndicator key={index} control={control} onPress={setSelectedControl} />
+              {controls.map((control) => (
+                <ControlIndicator key={control.type} control={control} onPress={setSelectedControl} />
               ))}
             </HStack>
           </Surface>
         </VStack>
       </ScrollableView>
       {selectedSensor && <SensorModal sensor={selectedSensor} onDismiss={() => setSelectedSensor(null)} />}
-      {selectedControl && (
-        <ControlModal
-          refetching={fetchingEnabledDevices}
-          control={selectedControl}
-          onDismiss={() => setSelectedControl(null)}
-        />
-      )}
+      {selectedControl && <ControlModal control={selectedControl} onDismiss={() => setSelectedControl(null)} />}
       {activeCrop && showPlanModal && <PlanModal crop={activeCrop} onDismiss={toggleShowPlanModal} />}
       {showChangePlanModal && (
         <ChangePlanModal

@@ -36,8 +36,7 @@ query GetLastActivationsPaginated($device: Device, $first: Int!, $page: Int) {
 
 query GetEnabledDevices {
   enabledDevices {
-    id
-    device
+    ...ActivationData
   }
 }
 
