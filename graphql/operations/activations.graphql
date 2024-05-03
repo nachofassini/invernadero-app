@@ -9,6 +9,10 @@ fragment ActivationData on Activation {
   amount
   measureUnit
   measureId
+  deviation {
+    expected
+    obtained
+  }
 }
 
 query GetActivation($id: ID!) {

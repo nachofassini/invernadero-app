@@ -635,6 +635,7 @@ export type ActivationDataFragment = {
   amount?: number | null;
   measureUnit?: MeasureUnit | null;
   measureId?: string | null;
+  deviation?: { __typename?: "Deviation"; expected: number; obtained: number } | null;
 };
 
 export type GetActivationQueryVariables = Exact<{
@@ -655,6 +656,7 @@ export type GetActivationQuery = {
     amount?: number | null;
     measureUnit?: MeasureUnit | null;
     measureId?: string | null;
+    deviation?: { __typename?: "Deviation"; expected: number; obtained: number } | null;
   };
 };
 
@@ -678,6 +680,7 @@ export type GetActivationsQuery = {
     amount?: number | null;
     measureUnit?: MeasureUnit | null;
     measureId?: string | null;
+    deviation?: { __typename?: "Deviation"; expected: number; obtained: number } | null;
   }>;
 };
 
@@ -714,6 +717,7 @@ export type GetLastActivationsPaginatedQuery = {
       amount?: number | null;
       measureUnit?: MeasureUnit | null;
       measureId?: string | null;
+      deviation?: { __typename?: "Deviation"; expected: number; obtained: number } | null;
     }>;
   } | null;
 };
@@ -734,6 +738,7 @@ export type GetEnabledDevicesQuery = {
     amount?: number | null;
     measureUnit?: MeasureUnit | null;
     measureId?: string | null;
+    deviation?: { __typename?: "Deviation"; expected: number; obtained: number } | null;
   }>;
 };
 
@@ -774,6 +779,7 @@ export type ActivateDeviceMutation = {
     amount?: number | null;
     measureUnit?: MeasureUnit | null;
     measureId?: string | null;
+    deviation?: { __typename?: "Deviation"; expected: number; obtained: number } | null;
   };
 };
 
@@ -795,6 +801,7 @@ export type DeactivateDeviceMutation = {
     amount?: number | null;
     measureUnit?: MeasureUnit | null;
     measureId?: string | null;
+    deviation?: { __typename?: "Deviation"; expected: number; obtained: number } | null;
   };
 };
 
@@ -1190,6 +1197,10 @@ export const ActivationDataFragmentDoc = gql`
     amount
     measureUnit
     measureId
+    deviation {
+      expected
+      obtained
+    }
   }
 `;
 export const CropBasicDataFragmentDoc = gql`

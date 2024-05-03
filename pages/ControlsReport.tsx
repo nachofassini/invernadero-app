@@ -39,6 +39,7 @@ export const ControlsReport = () => {
           <DataTable.Title style={{ minWidth: 50 }}>Dispositivo</DataTable.Title>
           <DataTable.Title>Motivo</DataTable.Title>
           <DataTable.Title numeric>Corrección</DataTable.Title>
+          <DataTable.Title numeric>Real./Esp.</DataTable.Title>
         </DataTable.Header>
         {loading ? (
           <ActivityIndicator color="green" style={{ padding: 20 }} />
@@ -71,6 +72,11 @@ export const ControlsReport = () => {
                       ) : (
                         `${activation.amount} ${getDeviceUnit(activation.device)}`
                       )}
+                    </DataTable.Cell>
+                    <DataTable.Cell numeric>
+                      {activation.deviation
+                        ? `${activation.deviation?.obtained}/${activation.deviation?.expected}`
+                        : ""}
                     </DataTable.Cell>
                   </DataTable.Row>
                 ))}
