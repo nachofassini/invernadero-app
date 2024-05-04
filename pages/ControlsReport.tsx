@@ -70,12 +70,12 @@ export const ControlsReport = () => {
                       {activation.enabled ? (
                         <Badge label="On" color="secondary" />
                       ) : (
-                        `${activation.amount} ${getDeviceUnit(activation.device)}`
+                        `${activation.amount} ${activation.measureUnit ?? ""}`
                       )}
                     </DataTable.Cell>
                     <DataTable.Cell numeric>
                       {activation.deviation
-                        ? `${activation.deviation?.obtained}/${activation.deviation?.expected}`
+                        ? `${activation.deviation?.obtained.toFixed(1)}/${activation.deviation?.expected.toFixed(1)}`
                         : ""}
                     </DataTable.Cell>
                   </DataTable.Row>
