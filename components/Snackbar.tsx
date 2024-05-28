@@ -30,7 +30,15 @@ export const Snackbar = ({ type, position = "absolute", actionTitle, onPress, st
       }}
       {...(onPress && actionTitle
         ? {
-            action: <Button title={actionTitle} color="secondary" onPress={onPress} compact />,
+            action: (
+              <Button
+                title={actionTitle}
+                color="secondary"
+                onPress={onPress}
+                compact
+                style={{ shadowOffset: { width: 2, height: 2 } }}
+              />
+            ),
           }
         : {})}
       {...rest}

@@ -60,16 +60,28 @@ export const ChangePlanModal = ({ activeCrop: activeCropData, loadingActiveCrop,
             <Fragment>
               <Text>Cultivo activo: {activeCropData.name}</Text>
               <HStack justify="between" style={{ paddingTop: 20 }}>
-                <Button loading={deactivating} onPress={() => deactivateCrop()} title="Desactivar" color="error" />
-                <Button onPress={onDismiss} title="Cerrar" />
+                <Button
+                  loading={deactivating}
+                  onPress={() => deactivateCrop()}
+                  title="Desactivar"
+                  color="error"
+                  style={{ shadowOffset: { width: 2, height: 2 } }}
+                />
+                <Button onPress={onDismiss} title="Cerrar" style={{ shadowOffset: { width: 2, height: 2 } }} />
               </HStack>
             </Fragment>
           ) : (
             <Fragment>
               <Select control={control} name="id" items={cropOptions} placeholder="Seleccione un cultivo" />
               <HStack justify="between" style={{ paddingTop: 20 }}>
-                <Button loading={loading} onPress={handleSubmit(onSubmit)} title="Activar plan" color="secondary" />
-                <Button onPress={onDismiss} title="Cerrar" />
+                <Button
+                  loading={loading}
+                  onPress={handleSubmit(onSubmit)}
+                  title="Activar plan"
+                  color="secondary"
+                  style={{ shadowOffset: { width: 2, height: 2 } }}
+                />
+                <Button onPress={onDismiss} title="Cerrar" style={{ shadowOffset: { width: 2, height: 2 } }} />
               </HStack>
             </Fragment>
           )}

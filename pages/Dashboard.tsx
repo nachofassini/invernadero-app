@@ -143,7 +143,12 @@ export const Dashboard = () => {
     return (
       <View style={{ padding: 20 }}>
         <Text style={{ padding: 20, textAlign: "center" }}>No se pudo establecer conexiön con el invernadero</Text>
-        <Button onPress={() => handleRefresh()} title="Intentar nuevamente" color="secondary" />
+        <Button
+          onPress={() => handleRefresh()}
+          title="Intentar nuevamente"
+          color="secondary"
+          style={{ shadowOffset: { width: 2, height: 2 } }}
+        />
       </View>
     );
   }

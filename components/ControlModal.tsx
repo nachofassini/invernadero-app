@@ -100,7 +100,7 @@ export const ControlModal = ({ control, onDismiss }: ControlModalProps) => {
                 <Button
                   loading={deactivating || loading}
                   title="Detener"
-                  style={{ marginTop: 10 }}
+                  style={{ marginTop: 10, shadowOffset: { width: 2, height: 2 } }}
                   color="error"
                   onPress={() => deactivateDevice()}
                 />
@@ -123,7 +123,7 @@ export const ControlModal = ({ control, onDismiss }: ControlModalProps) => {
                   disabled={!activationAmount}
                   loading={activating || loading}
                   title="Activar"
-                  style={{ marginTop: 20, zIndex: -1 }}
+                  style={{ marginTop: 20, zIndex: -1, shadowOffset: { width: 2, height: 2 } }}
                   color="secondary"
                   onPress={handleActivate}
                 />

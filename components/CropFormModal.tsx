@@ -14,6 +14,8 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { CropInput, useCreateOrUpdateCropMutation, useDeleteCropMutation } from "../gql";
 import { setFormValidationErrors } from "../utils/helpers";
+import { Snackbar } from "./Snackbar";
+import { useState } from "react";
 
 interface CropFormModalProps {
   defaultValues: CropInput;
@@ -32,7 +34,8 @@ const validationSchema = yup
   .required();
 
 export const CropFormModal = ({ defaultValues, onDismiss }: CropFormModalProps) => {
-  const { control, handleSubmit, setError } = useForm<CropInput>({
+  const [showDeleteError, setShowDeleteError] = useState(false);
+  const { control, handleSubmit, setError, clearErrors } = useForm<CropInput>({
     defaultValues,
     resolver: yupResolver(validationSchema),
   });
@@ -44,39 +47,64 @@ export const CropFormModal = ({ defaultValues, onDismiss }: CropFormModalProps) 
   });
   const [deleteFn, { loading: deleting }] = useDeleteCropMutation({
     onCompleted: onDismiss,
+    // onError: () => setShowDeleteError(true),
+    onError: () => {
+      setShowDeleteError(true);
+      setError("name", { message: "No se pudo eliminar el cultivo" });
+    },
     refetchQueries: ["GetCrops"],
   });
 
   const handleDelete = () => {
+    clearErrors("name");
+    setShowDeleteError(false);
     if (defaultValues.id) deleteFn({ variables: { id: defaultValues.id } });
   };
 
   const isFetching = loading || deleting;
 
   return (
-    // @ts-ignore
-    <Dialog visible onDismiss={onDismiss}>
-      <DialogHeader title={`${defaultValues?.id ? "Editar" : "Agregar"} cultivo`} />
-      <DialogContent>
-        <Input control={control} name="name" label="Nombre" placeholder="Nombre" />
-      </DialogContent>
-      <DialogActions>
-        <VStack spacing={10}>
-          <HStack spacing={20}>
-            <Button
-              title={defaultValues?.id ? "Guardar" : "Agregar"}
-              color="secondary"
-              onPress={handleSubmit((data) => creteOrUpdate({ variables: { data } }))}
-              loading={loading || false}
-              disabled={isFetching}
-            />
-            <Button title="Cancelar" color="primary" onPress={onDismiss} />
-          </HStack>
-          {defaultValues?.id && (
-            <Button title="Eliminar" color="error" onPress={handleDelete} loading={deleting} disabled={isFetching} />
-          )}
-        </VStack>
-      </DialogActions>
-    </Dialog>
+    <>
+      {/* @ts-ignore */}
+      <Dialog visible onDismiss={onDismiss}>
+        <DialogHeader title={`${defaultValues?.id ? "Editar" : "Agregar"} cultivo`} />
+        <DialogContent>
+          <Input control={control} name="name" label="Nombre" placeholder="Nombre" />
+        </DialogContent>
+        <DialogActions>
+          <VStack spacing={10}>
+            <HStack spacing={20}>
+              <Button
+                title={defaultValues?.id ? "Guardar" : "Agregar"}
+                color="secondary"
+                onPress={handleSubmit((data) => creteOrUpdate({ variables: { data } }))}
+                loading={loading || false}
+                disabled={isFetching}
+                style={{ shadowOffset: { width: 2, height: 2 } }}
+              />
+              <Button
+                title="Cancelar"
+                color="primary"
+                onPress={onDismiss}
+                style={{ shadowOffset: { width: 2, height: 2 } }}
+              />
+            </HStack>
+            {defaultValues?.id && (
+              <Button
+                title="Eliminar"
+                color="error"
+                onPress={handleDelete}
+                loading={deleting}
+                disabled={isFetching}
+                style={{ shadowOffset: { width: 2, height: 2 } }}
+              />
+            )}
+          </VStack>
+        </DialogActions>
+      </Dialog>
+      {showDeleteError && (
+        <Snackbar type="error" message="No se pudo eliminar el cultivo" style={{ top: undefined, bottom: 15 }} />
+      )}
+    </>
   );
 };

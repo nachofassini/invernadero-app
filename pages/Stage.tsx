@@ -59,7 +59,7 @@ export const Stage = () => {
               title="Eliminar etapa"
               onPress={() => deleteStage()}
               color="error"
-              style={{ marginTop: 10 }}
+              style={{ marginTop: 10, shadowOffset: { width: 2, height: 2 } }}
               loading={deleting}
               disabled={deleting}
             />

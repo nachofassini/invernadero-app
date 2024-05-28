@@ -119,10 +119,28 @@ export const PlanModal = ({ onDismiss, crop }: PlanModalProps) => {
       <DialogActions>
         <VStack spacing={20} style={{ width: "100%" }}>
           <HStack justify="between">
-            <Button onPress={handleEditStage} title="Modificar etapa" color="secondary" />
-            <Button onPress={onDismiss} title="Cerrar" />
+            <Button
+              disableElevation
+              onPress={handleEditStage}
+              title="Modificar etapa"
+              color="secondary"
+              style={{ shadowOffset: { width: 2, height: 2 } }}
+            />
+            <Button
+              disableElevation
+              onPress={onDismiss}
+              title="Cerrar"
+              style={{ shadowOffset: { width: 2, height: 2 } }}
+            />
           </HStack>
-          <Button loading={loading} onPress={() => deactivateCrop()} title="Desactivar" color="error" />
+          <Button
+            disableElevation
+            loading={loading}
+            onPress={() => deactivateCrop()}
+            title="Desactivar"
+            color="error"
+            style={{ shadowOffset: { width: 2, height: 2 } }}
+          />
         </VStack>
       </DialogActions>
     </Dialog>

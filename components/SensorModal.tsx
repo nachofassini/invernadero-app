@@ -137,7 +137,12 @@ export const SensorModal = ({ sensor, onDismiss }: SensorModalProps) => {
             </VStack>
           )}
         </VStack>
-        <Button title="Ver mas" color="secondary" style={{ marginTop: 20 }} onPress={navigateToReport} />
+        <Button
+          title="Ver mas"
+          color="secondary"
+          style={{ marginTop: 20, shadowOffset: { width: 2, height: 2 } }}
+          onPress={navigateToReport}
+        />
       </DialogContent>
     </Dialog>
   );

@@ -130,6 +130,7 @@ export const StageForm = ({ stage, loading, onSubmit, error }: SageFormProps) =>
         color="secondary"
         loading={loading}
         disabled={loading}
+        style={{ shadowOffset: { width: 2, height: 2 } }}
       />
     </Box>
   );
