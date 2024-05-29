@@ -56,26 +56,26 @@ export const ControlsReport = () => {
                 </DataTable.Header>
                 {items.map((activation) => (
                   <DataTable.Row key={activation.id}>
-                    <DataTable.Cell style={{ maxWidth: 65 }}>
-                      {formatDate(activation.createdAt, "H:mm:ss")}
+                    <DataTable.Cell style={{ maxWidth: 40 }}>
+                      {formatDate(activation.createdAt, "HH:mm")}
                     </DataTable.Cell>
-                    <DataTable.Cell style={{ minWidth: 50 }}>
+                    <DataTable.Cell style={{ minWidth: 55 }}>
                       <HStack items="center">
                         <ControlIcon type={activation.device} extraStyles={{ fontSize: 25, marginRight: 10 }} />
                         <Text>{getDeviceName(activation.device)}</Text>
                       </HStack>
                     </DataTable.Cell>
                     <DataTable.Cell>{getDeviceActivationByDescriptionWithIcon(activation.activatedBy)}</DataTable.Cell>
-                    <DataTable.Cell numeric>
+                    <DataTable.Cell numeric style={{ minWidth: 20}}>
                       {activation.enabled ? (
                         <Badge label="On" color="secondary" />
                       ) : (
-                        `${activation.amount} ${activation.measureUnit ?? ""}`
+                        `${activation.amount?.toFixed(1)} ${activation.measureUnit ?? ""}`
                       )}
                     </DataTable.Cell>
                     <DataTable.Cell numeric>
                       {activation.deviation
-                        ? `${activation.deviation?.obtained.toFixed(1)}/${activation.deviation?.expected.toFixed(1)}`
+                        ? `${activation.deviation?.obtained.toFixed(1)}/${activation.deviation?.expected.toFixed(0)}`
                         : ""}
                     </DataTable.Cell>
                   </DataTable.Row>
