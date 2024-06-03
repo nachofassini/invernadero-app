@@ -68,11 +68,11 @@ export const ControlModal = ({ control, onDismiss }: ControlModalProps) => {
               {activations?.map((activation) => (
                 <HStack key={activation.id}>
                   <Text variant="overline" style={{ fontSize: 16 }}>
-                    {formatDate(activation.createdAt, "MM/DD HH:mm:ss")}
+                    {formatDate(activation.createdAt, "DD/MM HH:mm:ss")}
                     {" -> "}
                   </Text>
                   <Text>
-                    {activation.amount} {activation.measureUnit}
+                    {activation.amount?.toFixed(1)} {activation.measureUnit}
                   </Text>
                 </HStack>
               ))}

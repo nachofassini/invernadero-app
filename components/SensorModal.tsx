@@ -127,8 +127,8 @@ export const SensorModal = ({ sensor, onDismiss }: SensorModalProps) => {
             <VStack>
               {lastMeasures?.map((measure) => (
                 <Text key={measure.id}>
-                  {formatDate(measure.createdAt)}:{" "}
-                  <Text variant="overline" style={{ fontSize: 16 }}>
+                  {formatDate(measure.createdAt, 'DD/MM HH:mm:ss')}{" -> "}
+                  <Text variant="overline" style={{ fontSize: 16,  }}>
                     {measure?.[sensor.dataKey]}
                     {getMeasureUnitBySensorType(sensor.type)}
                   </Text>
