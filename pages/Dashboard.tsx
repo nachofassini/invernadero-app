@@ -53,14 +53,14 @@ export const Dashboard = () => {
   const toggleShowPlanModal = () => setShowPlanModal((prevVal) => !prevVal);
   const toggleShowChangePlanModal = () => setShowChangePlanModal((prevVal) => !prevVal);
 
-  const { data: { activeCrop } = {}, loading: loadingActiveCrop } = useGetActiveCropQuery({
+  const { data: { activeCrop } = {}, loading: loadingActiveCrop, refetch } = useGetActiveCropQuery({
     notifyOnNetworkStatusChange: true,
   });
   const {
     data: { lastMeasure } = {},
     loading: refreshing,
     error,
-    refetch,
+    refetch: refetchLastMeasure,
   } = useGetLastMeasureQuery({ pollInterval: 10000 });
   const {
     data: { enabledDevices } = {},
@@ -73,6 +73,7 @@ export const Dashboard = () => {
 
   const handleRefresh = () => {
     refetch();
+    refetchLastMeasure();
     refetchEnabledDevices();
   };
 
