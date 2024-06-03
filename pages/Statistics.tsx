@@ -89,136 +89,6 @@ export const Statistics = () => {
     <ScrollableView loading={false} onRefresh={handleRefresh}>
       <VStack spacing={20} style={{ padding: 20 }}>
         <Surface style={styles.card}>
-          <Text style={styles.cardTitle}>Temperatura promedio últimas 24 horas</Text>
-          {loadingMeasuresAverageByHour ? (
-            <ActivityIndicator color="green" />
-          ) : !measuresAverageGroupedByHour?.length ? (
-            <Text style={{ textAlign: "center" }}>Sin datos</Text>
-          ) : (
-            <LineChart
-              data={{
-                labels: measuresAverageGroupedByHour?.map((item) => formatDate(item.date, "HH")) || [],
-                datasets: [{ data: measuresAverageGroupedByHour?.map((item) => item.insideTemperature ?? 0) || [] }],
-              }}
-              width={Dimensions.get("screen").width - 60}
-              height={250}
-              yAxisLabel=""
-              yAxisSuffix=""
-              chartConfig={{
-                backgroundColor: "#e26a00",
-                backgroundGradientFrom: "#fb8c00",
-                backgroundGradientTo: "#ffa726",
-                decimalPlaces: 1,
-                color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-                style: {
-                  borderRadius: 16,
-                },
-              }}
-              style={{ borderRadius: 16 }}
-              verticalLabelRotation={60}
-            />
-          )}
-        </Surface>
-
-        <Surface style={styles.card}>
-          <Text style={styles.cardTitle}>Humedad promedio últimas 24 horas</Text>
-          {loadingMeasuresAverageByHour ? (
-            <ActivityIndicator color="green" />
-          ) : !measuresAverageGroupedByHour?.length ? (
-            <Text style={{ textAlign: "center" }}>Sin datos</Text>
-          ) : (
-            <LineChart
-              data={{
-                labels: measuresAverageGroupedByHour?.map((item) => formatDate(item.date, "HH")) || [],
-                datasets: [{ data: measuresAverageGroupedByHour?.map((item) => item.insideHumidity ?? 0) || [] }],
-              }}
-              width={Dimensions.get("screen").width - 60}
-              height={250}
-              yAxisLabel=""
-              yAxisSuffix=""
-              chartConfig={{
-                backgroundColor: "#e26a00",
-                backgroundGradientFrom: "#fb8c00",
-                backgroundGradientTo: "#ffa726",
-                decimalPlaces: 1,
-                color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-                style: {
-                  borderRadius: 16,
-                },
-              }}
-              style={{ borderRadius: 16 }}
-              verticalLabelRotation={60}
-            />
-          )}
-        </Surface>
-
-        {showCo2() && (
-          <Surface style={styles.card}>
-            <Text style={styles.cardTitle}>Co2 promedio ultimos {MEASURE_FROM_LAST_N_DAYS} días</Text>
-            {loadingMeasuresAverageByHour ? (
-              <ActivityIndicator color="green" />
-            ) : !measuresAverageGroupedByHour?.length ? (
-              <Text style={{ textAlign: "center" }}>Sin datos</Text>
-            ) : (
-              <LineChart
-                data={{
-                  labels: measuresAverageGroupedByHour?.map((item) => formatDate(item.date, "D/M")) || [],
-                  datasets: [{ data: measuresAverageGroupedByHour?.map((item) => item.co2 ?? 0) || [] }],
-                }}
-                width={Dimensions.get("screen").width - 60}
-                height={250}
-                yAxisLabel=""
-                yAxisSuffix=""
-                chartConfig={{
-                  backgroundColor: "#e26a00",
-                  backgroundGradientFrom: "#fb8c00",
-                  backgroundGradientTo: "#ffa726",
-                  decimalPlaces: 1,
-                  color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-                  style: {
-                    borderRadius: 16,
-                  },
-                }}
-                style={{ borderRadius: 16 }}
-                verticalLabelRotation={60}
-              />
-            )}
-          </Surface>
-        )}
-
-        <Surface style={styles.card}>
-          <Text style={styles.cardTitle}>Iluminación promedio últimas 24 horas</Text>
-          {loadingMeasuresAverageByHour ? (
-            <ActivityIndicator color="green" />
-          ) : !measuresAverageGroupedByHour?.length ? (
-            <Text style={{ textAlign: "center" }}>Sin datos</Text>
-          ) : (
-            <LineChart
-              data={{
-                labels: measuresAverageGroupedByHour?.map((item) => formatDate(item.date, "HH")) || [],
-                datasets: [{ data: measuresAverageGroupedByHour?.map((item) => item.lighting) || [] }],
-              }}
-              width={Dimensions.get("screen").width - 60}
-              height={250}
-              yAxisLabel=""
-              yAxisSuffix=""
-              chartConfig={{
-                backgroundColor: "#e26a00",
-                backgroundGradientFrom: "#fb8c00",
-                backgroundGradientTo: "#ffa726",
-                decimalPlaces: 1,
-                color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-                style: {
-                  borderRadius: 16,
-                },
-              }}
-              style={{ borderRadius: 16 }}
-              verticalLabelRotation={60}
-            />
-          )}
-        </Surface>
-
-        <Surface style={styles.card}>
           <Text style={styles.cardTitle}>Temperatura promedio ultimos {MEASURE_FROM_LAST_N_DAYS} días</Text>
           {loadingMeasuresAverageByDay ? (
             <ActivityIndicator color="green" />
@@ -327,6 +197,136 @@ export const Statistics = () => {
               data={{
                 labels: measuresAverageGroupedByDay?.map((item) => formatDate(item.date, "D/M")) || [],
                 datasets: [{ data: measuresAverageGroupedByDay?.map((item) => item.lighting) || [] }],
+              }}
+              width={Dimensions.get("screen").width - 60}
+              height={250}
+              yAxisLabel=""
+              yAxisSuffix=""
+              chartConfig={{
+                backgroundColor: "#e26a00",
+                backgroundGradientFrom: "#fb8c00",
+                backgroundGradientTo: "#ffa726",
+                decimalPlaces: 1,
+                color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                style: {
+                  borderRadius: 16,
+                },
+              }}
+              style={{ borderRadius: 16 }}
+              verticalLabelRotation={60}
+            />
+          )}
+        </Surface>
+
+        <Surface style={styles.card}>
+          <Text style={styles.cardTitle}>Temperatura promedio últimas 24 horas</Text>
+          {loadingMeasuresAverageByHour ? (
+            <ActivityIndicator color="green" />
+          ) : !measuresAverageGroupedByHour?.length ? (
+            <Text style={{ textAlign: "center" }}>Sin datos</Text>
+          ) : (
+            <LineChart
+              data={{
+                labels: measuresAverageGroupedByHour?.map((item) => formatDate(item.date, "HH")) || [],
+                datasets: [{ data: measuresAverageGroupedByHour?.map((item) => item.insideTemperature ?? 0) || [] }],
+              }}
+              width={Dimensions.get("screen").width - 60}
+              height={250}
+              yAxisLabel=""
+              yAxisSuffix=""
+              chartConfig={{
+                backgroundColor: "#e26a00",
+                backgroundGradientFrom: "#fb8c00",
+                backgroundGradientTo: "#ffa726",
+                decimalPlaces: 1,
+                color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                style: {
+                  borderRadius: 16,
+                },
+              }}
+              style={{ borderRadius: 16 }}
+              verticalLabelRotation={60}
+            />
+          )}
+        </Surface>
+
+        <Surface style={styles.card}>
+          <Text style={styles.cardTitle}>Humedad promedio últimas 24 horas</Text>
+          {loadingMeasuresAverageByHour ? (
+            <ActivityIndicator color="green" />
+          ) : !measuresAverageGroupedByHour?.length ? (
+            <Text style={{ textAlign: "center" }}>Sin datos</Text>
+          ) : (
+            <LineChart
+              data={{
+                labels: measuresAverageGroupedByHour?.map((item) => formatDate(item.date, "HH")) || [],
+                datasets: [{ data: measuresAverageGroupedByHour?.map((item) => item.insideHumidity ?? 0) || [] }],
+              }}
+              width={Dimensions.get("screen").width - 60}
+              height={250}
+              yAxisLabel=""
+              yAxisSuffix=""
+              chartConfig={{
+                backgroundColor: "#e26a00",
+                backgroundGradientFrom: "#fb8c00",
+                backgroundGradientTo: "#ffa726",
+                decimalPlaces: 1,
+                color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                style: {
+                  borderRadius: 16,
+                },
+              }}
+              style={{ borderRadius: 16 }}
+              verticalLabelRotation={60}
+            />
+          )}
+        </Surface>
+
+        {showCo2() && (
+          <Surface style={styles.card}>
+            <Text style={styles.cardTitle}>Co2 promedio ultimos {MEASURE_FROM_LAST_N_DAYS} días</Text>
+            {loadingMeasuresAverageByHour ? (
+              <ActivityIndicator color="green" />
+            ) : !measuresAverageGroupedByHour?.length ? (
+              <Text style={{ textAlign: "center" }}>Sin datos</Text>
+            ) : (
+              <LineChart
+                data={{
+                  labels: measuresAverageGroupedByHour?.map((item) => formatDate(item.date, "D/M")) || [],
+                  datasets: [{ data: measuresAverageGroupedByHour?.map((item) => item.co2 ?? 0) || [] }],
+                }}
+                width={Dimensions.get("screen").width - 60}
+                height={250}
+                yAxisLabel=""
+                yAxisSuffix=""
+                chartConfig={{
+                  backgroundColor: "#e26a00",
+                  backgroundGradientFrom: "#fb8c00",
+                  backgroundGradientTo: "#ffa726",
+                  decimalPlaces: 1,
+                  color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                  style: {
+                    borderRadius: 16,
+                  },
+                }}
+                style={{ borderRadius: 16 }}
+                verticalLabelRotation={60}
+              />
+            )}
+          </Surface>
+        )}
+
+        <Surface style={styles.card}>
+          <Text style={styles.cardTitle}>Iluminación promedio últimas 24 horas</Text>
+          {loadingMeasuresAverageByHour ? (
+            <ActivityIndicator color="green" />
+          ) : !measuresAverageGroupedByHour?.length ? (
+            <Text style={{ textAlign: "center" }}>Sin datos</Text>
+          ) : (
+            <LineChart
+              data={{
+                labels: measuresAverageGroupedByHour?.map((item) => formatDate(item.date, "HH")) || [],
+                datasets: [{ data: measuresAverageGroupedByHour?.map((item) => item.lighting) || [] }],
               }}
               width={Dimensions.get("screen").width - 60}
               height={250}
