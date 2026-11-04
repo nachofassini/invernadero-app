@@ -23,6 +23,13 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   ios: {
     supportsTablet: true,
     bundleIdentifier: "com.nachofassini.invernadero-app",
+    config: {
+      usesNonExemptEncryption: false,
+    },
+    privacyManifests: {
+      NSPrivacyAccessedAPITypes: [],
+      NSPrivacyTracking: false,
+    },
   },
   android: {
     package: "com.nachofassini.invernadero",
